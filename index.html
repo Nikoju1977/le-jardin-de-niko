@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1410">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>L'Oracle du Jardinier · v24 · Terroir Synthétique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=DM+Sans:opsz,wght@9..40,300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TERROIR SYNTHÉTIQUE — Design System
+   Niko Julienne Labs · L'Oracle du Jardinier v24
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --soil-deep:#07100c; --soil:#0a1410; --humus:#0f1c17;
+  --bark:#15251e; --moss:#1d3329; --lichen:#2a4438;
+  --chloro-900:#052e1e; --chloro-700:#0f5132; --chloro-500:#10b981;
+  --chloro-400:#34d399; --chloro-300:#6ee7b7; --chloro-100:#d1fae5;
+  --ochre:#d4a574; --terracotta:#c65d3a;
+  --rain:#7dd3fc; --dew:#bae6fd;
+  --alert:#f87171; --warn:#fbbf24;
+  --ink-100:#fafaf5; --ink-80:#d6d3c8; --ink-60:#a3a199; --ink-40:#6d6c66;
+  --edge:rgba(209,250,229,.08); --edge-strong:rgba(209,250,229,.16); --edge-accent:rgba(16,185,129,.3);
+  --f-display:'Fraunces',Georgia,serif;
+  --f-body:'DM Sans',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+  --sa-t:env(safe-area-inset-top,0px);
+  --sa-b:env(safe-area-inset-bottom,0px);
+  --sa-l:env(safe-area-inset-left,0px);
+  --sa-r:env(safe-area-inset-right,0px);
+  --nav-h:62px; --hd-h:70px;
+  --radius:14px; --radius-sm:8px; --radius-lg:20px;
+  --glow-chloro:0 0 24px rgba(16,185,129,.22);
+  --shadow-md:0 8px 24px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--soil);color:var(--ink-100);font-family:var(--f-body);font-size:15px;line-height:1.5;overscroll-behavior-y:none;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{
+  min-height:100dvh;
+  background:
+    radial-gradient(1200px 600px at 15% -10%,rgba(16,185,129,.08),transparent 60%),
+    radial-gradient(1000px 500px at 90% 100%,rgba(212,165,116,.06),transparent 50%),
+    linear-gradient(180deg,var(--soil-deep) 0%,var(--soil) 40%,var(--humus) 100%);
+  background-attachment:fixed;
+  padding:calc(var(--hd-h) + var(--sa-t) + 10px) var(--sa-r) calc(var(--nav-h) + var(--sa-b) + 16px) var(--sa-l);
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.35;mix-blend-mode:overlay;
+}
+.botanical{position:fixed;pointer-events:none;z-index:0;opacity:.08;color:var(--chloro-300)}
+.botanical.tl{top:calc(var(--hd-h) + 10px);left:-40px;width:220px;transform:rotate(-12deg)}
+.botanical.br{bottom:calc(var(--nav-h) + 20px);right:-30px;width:180px;transform:rotate(165deg)}
+
+/* HEADER */
+header.hd{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:calc(var(--sa-t) + 10px) 16px 10px;
+  background:linear-gradient(180deg,rgba(7,16,12,.95) 0%,rgba(7,16,12,.85) 80%,rgba(7,16,12,0) 100%);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--edge);
+}
+.hd-row{display:flex;align-items:center;gap:10px;min-height:46px}
+.hd-title{font-family:var(--f-display);font-weight:400;font-size:1.25em;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 1;letter-spacing:-.01em;margin:0;color:var(--ink-100);flex:1}
+.hd-title em{font-style:italic;color:var(--chloro-400);font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1}
+.hd-meta{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:.72em;color:var(--ink-60);font-family:var(--f-mono);letter-spacing:.04em}
+.hd-dot{width:6px;height:6px;border-radius:50%;background:var(--chloro-400);box-shadow:0 0 8px var(--chloro-500)}
+.hd-dot.off{background:var(--ink-40);box-shadow:none}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:100px;font-size:.68em;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.06em;background:rgba(209,250,229,.04);border:1px solid var(--edge);color:var(--ink-80)}
+.pill.live{background:rgba(16,185,129,.1);border-color:var(--edge-accent);color:var(--chloro-300)}
+.pill.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(--warn)}
+.pill.off{background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.25);color:var(--alert)}
+
+/* NAV */
+nav.nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  padding:6px var(--sa-r) calc(var(--sa-b) + 6px) var(--sa-l);
+  background:linear-gradient(0deg,rgba(7,16,12,.96) 0%,rgba(7,16,12,.88) 70%,rgba(7,16,12,0) 100%);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--edge);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:2px;
+}
+.nb{background:none;border:none;color:var(--ink-60);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);border-radius:var(--radius-sm);position:relative;font-family:var(--f-body)}
+.nb .ic{font-size:1.2em;line-height:1;transition:transform .25s}
+.nb .lb{font-size:.62em;font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-family:var(--f-mono)}
+.nb.on{color:var(--chloro-300)}
+.nb.on .ic{transform:translateY(-2px) scale(1.1)}
+.nb.on::before{content:'';position:absolute;top:2px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:var(--chloro-400);border-radius:2px;box-shadow:0 0 6px var(--chloro-500)}
+.nb:active .ic{transform:scale(.92)}
+
+/* LAYOUT */
+main.main{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:14px 14px 10px}
+.tp{display:none;animation:fadeUp .42s cubic-bezier(.2,.9,.3,1) both}
+.tp.on{display:block}
+.tp-title{font-family:var(--f-display);font-weight:300;font-size:1.9em;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 0;margin:6px 0 4px;letter-spacing:-.02em;line-height:1.05}
+.tp-title em{font-style:italic;color:var(--chloro-400);font-variation-settings:'opsz' 144,'SOFT' 100,'WONK' 1}
+.tp-sub{font-size:.82em;color:var(--ink-60);margin:0 0 20px;font-family:var(--f-mono);letter-spacing:.03em}
+
+/* CARDS */
+.card{background:linear-gradient(180deg,var(--humus) 0%,var(--soil) 100%);border:1px solid var(--edge);border-radius:var(--radius);padding:16px;margin-bottom:14px;position:relative;overflow:hidden}
+.card.glow{border-color:var(--edge-accent);box-shadow:var(--glow-chloro)}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-hd h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:1.1em;font-variation-settings:'opsz' 20;letter-spacing:-.005em;color:var(--ink-100);flex:1}
+.card-hd .ic{font-size:1.35em;filter:drop-shadow(0 0 6px rgba(16,185,129,.3))}
+
+.tele{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0}
+.tele-cell{background:rgba(29,51,41,.35);border:1px solid var(--edge);border-radius:var(--radius-sm);padding:11px 13px;position:relative}
+.tele-cell .lb{font-size:.66em;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-60);font-family:var(--f-mono);margin-bottom:4px}
+.tele-cell .vl{font-family:var(--f-display);font-weight:400;font-size:1.55em;font-variation-settings:'opsz' 40;color:var(--chloro-300);letter-spacing:-.015em;line-height:1.1}
+.tele-cell .un{font-size:.5em;color:var(--ink-60);margin-left:2px;font-family:var(--f-mono)}
+.tele-cell .sub{font-size:.68em;color:var(--ink-80);margin-top:2px;font-family:var(--f-mono)}
+.tele-cell.warn .vl{color:var(--warn)}
+.tele-cell.alert .vl{color:var(--alert)}
+
+.hero{background:radial-gradient(ellipse at top left,rgba(16,185,129,.12),transparent 60%),linear-gradient(180deg,var(--humus) 0%,var(--soil-deep) 100%);border:1px solid var(--edge-accent);border-radius:var(--radius-lg);padding:22px 18px;margin-bottom:16px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:0;right:0;width:140px;height:140px;background:radial-gradient(circle,rgba(16,185,129,.15) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
+.hero-eyebrow{font-family:var(--f-mono);font-size:.7em;text-transform:uppercase;letter-spacing:.12em;color:var(--chloro-400);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--chloro-500)}
+.hero h2{font-family:var(--f-display);font-weight:300;font-size:1.8em;font-variation-settings:'opsz' 144,'SOFT' 50,'WONK' 1;margin:0 0 10px;line-height:1.05;letter-spacing:-.02em}
+.hero h2 em{font-style:italic;color:var(--chloro-400)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:100px;cursor:pointer;font-family:var(--f-body);font-size:.9em;font-weight:600;letter-spacing:.02em;border:1px solid var(--edge-strong);background:var(--bark);color:var(--ink-100);transition:all .2s cubic-bezier(.2,.8,.2,1);text-decoration:none}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,var(--chloro-500) 0%,var(--chloro-700) 100%);border-color:var(--chloro-400);color:var(--soil-deep);box-shadow:var(--glow-chloro)}
+.btn.ghost{background:transparent;color:var(--ink-80)}
+.btn.sm{padding:7px 13px;font-size:.78em}
+.btn.full{width:100%}
+.btn.danger{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--alert)}
+
+/* FORMS */
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:.72em;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-60);margin-bottom:6px;font-family:var(--f-mono)}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 13px;border:1px solid var(--edge-strong);border-radius:var(--radius-sm);background:var(--soil-deep);color:var(--ink-100);font-family:var(--f-body);font-size:.92em;transition:border-color .2s,box-shadow .2s}
+.fld input.pwd{font-family:var(--f-mono);letter-spacing:.02em;-webkit-text-security:disc}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--chloro-500);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+.fld textarea{resize:vertical;min-height:80px;font-family:var(--f-body)}
+.fld .hint{font-size:.7em;color:var(--ink-60);margin-top:4px;font-family:var(--f-mono)}
+.fld-row{display:flex;gap:8px}
+.fld-row>*{flex:1}
+
+/* ORACLE OUTPUT */
+.oracle-out{margin-top:14px}
+.section-head{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px}
+.section-head .n{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:1.35em;color:var(--ink-80);font-variation-settings:'opsz' 40,'SOFT' 100,'WONK' 1}
+.section-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--edge-accent) 0%,transparent 100%)}
+
+.action-list{list-style:none;padding:0;margin:0}
+.action-list li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;margin-bottom:8px;background:rgba(29,51,41,.25);border:1px solid var(--edge);border-radius:var(--radius-sm);transition:border-color .2s}
+.action-list li:hover{border-color:var(--edge-strong)}
+.action-list .bullet{flex-shrink:0;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;font-family:var(--f-mono)}
+.action-list.do .bullet{background:rgba(16,185,129,.15);color:var(--chloro-300);border:1px solid var(--edge-accent)}
+.action-list.dont .bullet{background:rgba(248,113,113,.12);color:var(--alert);border:1px solid rgba(248,113,113,.3)}
+.action-list.forecast .bullet{background:rgba(125,211,252,.12);color:var(--rain);border:1px solid rgba(125,211,252,.3)}
+.action-list li .txt{font-size:.92em;line-height:1.55;color:var(--ink-80)}
+.action-list li .txt strong{color:var(--ink-100);font-weight:600}
+
+.summary-box{margin-top:18px;padding:16px 18px;background:linear-gradient(135deg,rgba(16,185,129,.08) 0%,rgba(212,165,116,.04) 100%);border:1px solid var(--edge-accent);border-radius:var(--radius);position:relative}
+.summary-box::before{content:'〜';position:absolute;top:-14px;left:16px;background:var(--soil);padding:0 8px;font-family:var(--f-display);color:var(--chloro-400);font-size:1.5em}
+.summary-box .txt{font-family:var(--f-display);font-style:italic;font-weight:300;font-size:1.05em;font-variation-settings:'opsz' 40,'SOFT' 100;line-height:1.5;color:var(--ink-100)}
+
+/* LIST ITEMS */
+.list-item{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:8px;background:var(--humus);border:1px solid var(--edge);border-radius:var(--radius-sm);transition:border-color .2s}
+.list-item:hover{border-color:var(--edge-strong)}
+.list-item .pic{width:38px;height:38px;border-radius:50%;background:var(--moss);display:flex;align-items:center;justify-content:center;font-size:1.2em;flex-shrink:0}
+.list-item .body{flex:1;min-width:0}
+.list-item .t{font-weight:500;color:var(--ink-100);margin-bottom:2px}
+.list-item .s{font-size:.75em;color:var(--ink-60);font-family:var(--f-mono);word-wrap:break-word}
+.list-item .del{background:none;border:none;color:var(--ink-40);cursor:pointer;padding:8px;font-size:1.1em;transition:color .2s;flex-shrink:0}
+.list-item .del:hover,.list-item .del:active{color:var(--alert)}
+
+.list-item.done{opacity:.55}
+.list-item.done .t{text-decoration:line-through}
+
+.status-chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:.64em;text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-mono);margin-left:6px}
+.status-chip.semé{background:rgba(212,165,116,.15);color:var(--ochre);border:1px solid rgba(212,165,116,.3)}
+.status-chip.germé{background:rgba(125,211,252,.12);color:var(--rain);border:1px solid rgba(125,211,252,.3)}
+.status-chip.pousse{background:rgba(16,185,129,.15);color:var(--chloro-300);border:1px solid var(--edge-accent)}
+.status-chip.récolté{background:rgba(45,58,53,.6);color:var(--ink-60);border:1px solid var(--edge)}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-60)}
+.empty-state .ic{font-size:2.5em;margin-bottom:12px;opacity:.6}
+.empty-state h4{font-family:var(--f-display);font-weight:300;font-style:italic;font-size:1.2em;margin:0 0 4px;color:var(--ink-80);font-variation-settings:'opsz' 40,'SOFT' 100,'WONK' 1}
+.empty-state p{margin:0;font-size:.85em}
+
+/* LOADING & ANIMATIONS */
+.loader{display:inline-block;width:14px;height:14px;border:2px solid var(--edge-strong);border-top-color:var(--chloro-400);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.stagger>*{animation:fadeUp .45s cubic-bezier(.2,.9,.3,1) both}
+.stagger>*:nth-child(1){animation-delay:.05s}
+.stagger>*:nth-child(2){animation-delay:.1s}
+.stagger>*:nth-child(3){animation-delay:.15s}
+.stagger>*:nth-child(4){animation-delay:.2s}
+.stagger>*:nth-child(5){animation-delay:.25s}
+.stagger>*:nth-child(6){animation-delay:.3s}
+
+#toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + var(--sa-b) + 18px);transform:translateX(-50%) translateY(20px);opacity:0;background:var(--bark);color:var(--ink-100);padding:10px 18px;border-radius:100px;border:1px solid var(--edge-strong);font-size:.82em;font-weight:500;z-index:9999;pointer-events:none;transition:all .3s cubic-bezier(.2,.8,.2,1);white-space:nowrap;box-shadow:var(--shadow-md);max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--edge-accent)}
+#toast.err{border-color:rgba(248,113,113,.4);color:var(--alert)}
+
+/* PROVIDER CHIP */
+.prov-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;font-size:.75em;font-family:var(--f-body);font-weight:500;border:1px solid var(--edge-strong);background:var(--bark);color:var(--ink-80);cursor:pointer;transition:all .2s}
+.prov-chip.on{background:rgba(16,185,129,.1);border-color:var(--edge-accent);color:var(--chloro-300)}
+.prov-chip .led{width:6px;height:6px;border-radius:50%;background:var(--ink-40);flex-shrink:0}
+.prov-chip.ok .led{background:var(--chloro-400);box-shadow:0 0 6px var(--chloro-500)}
+.prov-chip.bad .led{background:var(--alert)}
+.prov-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--bark) 25%,var(--moss) 50%,var(--bark) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-sm);height:16px;margin-bottom:8px}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--soil-deep)}
+::-webkit-scrollbar-thumb{background:var(--moss);border-radius:2px}
+
+/* MOON */
+.moon-viz{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#e8e5dc,#a8a49a);position:relative;overflow:hidden;box-shadow:inset -8px -8px 16px rgba(0,0,0,.3),0 0 20px rgba(255,255,255,.1);flex-shrink:0}
+.moon-shadow{position:absolute;top:0;width:56px;height:56px;border-radius:50%;background:var(--soil-deep);transition:transform .4s}
+
+/* METEO DAYS */
+.day-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--edge)}
+.day-row:last-child{border-bottom:none}
+.day-row .dy{font-family:var(--f-display);font-style:italic;font-size:1em;color:var(--ink-100);width:70px;flex-shrink:0;font-variation-settings:'opsz' 40,'SOFT' 100,'WONK' 1}
+.day-row .ic{font-size:1.35em;width:30px;text-align:center}
+.day-row .tmp{font-family:var(--f-mono);font-size:.92em;color:var(--ink-80);width:80px;text-align:right}
+.day-row .tmp strong{color:var(--ink-100);font-weight:500}
+.day-row .rn{font-family:var(--f-mono);font-size:.72em;color:var(--rain);width:55px;text-align:right}
+
+/* UTILS */
+.mt-sm{margin-top:8px}.mt-md{margin-top:16px}.mt-lg{margin-top:24px}
+.mb-sm{margin-bottom:8px}.mb-md{margin-bottom:16px}
+.mono{font-family:var(--f-mono)}
+.display{font-family:var(--f-display)}
+.dim{color:var(--ink-60)}
+.hidden{display:none !important}
+
+@media(min-width:680px){
+  .tele{grid-template-columns:repeat(4,1fr)}
+  body{padding-left:calc(var(--sa-l) + 20px);padding-right:calc(var(--sa-r) + 20px)}
+}
+</style>
+</head>
+<body>
+
+<svg class="botanical tl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <path fill="none" stroke="currentColor" stroke-width="1.2" d="M100 180 Q95 140 85 110 Q75 85 60 65 Q50 55 38 48"/>
+  <path fill="none" stroke="currentColor" stroke-width="1" d="M85 110 Q75 108 62 115 Q55 118 48 128"/>
+  <path fill="none" stroke="currentColor" stroke-width="1" d="M95 140 Q110 140 125 132 Q135 128 142 118"/>
+  <ellipse cx="55" cy="120" rx="7" ry="3" fill="currentColor" transform="rotate(-40 55 120)" opacity=".6"/>
+  <ellipse cx="130" cy="128" rx="7" ry="3" fill="currentColor" transform="rotate(35 130 128)" opacity=".6"/>
+  <ellipse cx="42" cy="52" rx="8" ry="3" fill="currentColor" transform="rotate(-60 42 52)" opacity=".6"/>
+</svg>
+
+<svg class="botanical br" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <path fill="none" stroke="currentColor" stroke-width="1.2" d="M100 180 Q105 140 115 110 Q125 85 140 65"/>
+  <path fill="none" stroke="currentColor" stroke-width="1" d="M115 110 Q125 108 138 115"/>
+  <path fill="none" stroke="currentColor" stroke-width="1" d="M105 140 Q90 140 75 132"/>
+  <ellipse cx="145" cy="120" rx="7" ry="3" fill="currentColor" transform="rotate(40 145 120)" opacity=".6"/>
+  <ellipse cx="70" cy="128" rx="7" ry="3" fill="currentColor" transform="rotate(-35 70 128)" opacity=".6"/>
+</svg>
+
+<header class="hd">
+  <div class="hd-row">
+    <h1 class="hd-title">L'Oracle <em>du Jardinier</em></h1>
+    <span class="pill" id="provChipHd">—</span>
+  </div>
+  <div class="hd-meta">
+    <span class="hd-dot" id="liveDot"></span>
+    <span id="hdDate">…</span>
+    <span class="dim">·</span>
+    <span id="hdLoc">La Meilleraye (44)</span>
+    <span class="pill off hidden" id="offBadge" style="margin-left:auto">HORS-LIGNE</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <section class="tp on" id="tab-oracle">
+    <h2 class="tp-title">Le <em>briefing</em> du jour</h2>
+    <p class="tp-sub">lecture temps-réel du terroir</p>
+
+    <div class="hero">
+      <div class="hero-eyebrow">Oracle · Loire-Atlantique · 47.55°N</div>
+      <h2 id="heroGreeting">Bonjour, <em>jardinier</em></h2>
+      <p class="dim" style="font-size:.88em;margin:0 0 14px">Consultation agronomique fusionnant météo live, phase lunaire, qualité d'air et profil pédologique.</p>
+      <button class="btn primary full" id="btnOracle" onclick="launchOracle()">
+        <span class="ic">✦</span>
+        <span id="btnOracleLbl">Consulter l'Oracle</span>
+      </button>
+    </div>
+
+    <div class="card stagger">
+      <div class="card-hd">
+        <span class="ic">🌡</span>
+        <h3>Télémétrie terrain</h3>
+        <span class="pill live" id="wxStatus"><span class="loader" style="width:8px;height:8px;border-width:1.5px"></span> live</span>
+      </div>
+      <div class="tele" id="teleGrid">
+        <div class="tele-cell"><div class="lb">Température</div><div class="vl">—<span class="un">°C</span></div><div class="sub">&nbsp;</div></div>
+        <div class="tele-cell"><div class="lb">Humidité</div><div class="vl">—<span class="un">%</span></div><div class="sub">&nbsp;</div></div>
+        <div class="tele-cell"><div class="lb">Vent</div><div class="vl">—<span class="un">km/h</span></div><div class="sub">&nbsp;</div></div>
+        <div class="tele-cell"><div class="lb">Précip. 24h</div><div class="vl">—<span class="un">mm</span></div><div class="sub">&nbsp;</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="ic">🌙</span>
+        <h3>Phase lunaire</h3>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="moon-viz" id="moonViz"><div class="moon-shadow" id="moonShadow"></div></div>
+        <div style="flex:1">
+          <div class="mono" style="font-size:.72em;color:var(--ink-60);text-transform:uppercase;letter-spacing:.08em">Jour biodynamique</div>
+          <div class="display" style="font-size:1.25em;font-style:italic;margin:2px 0;font-variation-settings:'opsz' 40,'SOFT' 100,'WONK' 1" id="moonLabel">—</div>
+          <div class="mono" style="font-size:.78em;color:var(--chloro-300)" id="moonType">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="oracleOutput" class="oracle-out"></div>
+  </section>
+
+  <section class="tp" id="tab-meteo">
+    <h2 class="tp-title">La <em>météo</em> vivante</h2>
+    <p class="tp-sub">open-meteo · 7 jours · 47.55°N -1.40°W</p>
+    <div id="meteoContent">
+      <div class="card"><div class="skel"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:50%"></div></div>
+    </div>
+  </section>
+
+  <section class="tp" id="tab-semences">
+    <h2 class="tp-title">Les <em>semences</em></h2>
+    <p class="tp-sub">suivi de pousse · stockage local</p>
+    <div class="card">
+      <div class="fld">
+        <label>Nouvelle semence</label>
+        <input type="text" id="newSeedName" placeholder="ex: Tomate Noire de Crimée">
+      </div>
+      <div class="fld">
+        <label>Statut</label>
+        <select id="newSeedStatus">
+          <option value="semé">Semé</option>
+          <option value="germé">Germé</option>
+          <option value="pousse">En pousse</option>
+          <option value="récolté">Récolté</option>
+        </select>
+      </div>
+      <button class="btn primary sm" onclick="addSeed()">+ Ajouter</button>
+    </div>
+    <div id="seedsList"></div>
+  </section>
+
+  <section class="tp" id="tab-taches">
+    <h2 class="tp-title">Les <em>tâches</em></h2>
+    <p class="tp-sub">à faire au jardin</p>
+    <div class="card">
+      <div class="fld">
+        <label>Nouvelle tâche</label>
+        <input type="text" id="newTaskTxt" placeholder="ex: Biner les rangs de tomates">
+      </div>
+      <div class="fld">
+        <label>Échéance (optionnelle)</label>
+        <input type="date" id="newTaskDate">
+      </div>
+      <button class="btn primary sm" onclick="addTask()">+ Ajouter</button>
+    </div>
+    <div id="tasksList"></div>
+  </section>
+
+  <section class="tp" id="tab-journal">
+    <h2 class="tp-title">Le <em>journal</em></h2>
+    <p class="tp-sub">notes du terrain · horodatées</p>
+    <div class="card">
+      <div class="fld">
+        <label>Nouvelle entrée</label>
+        <textarea id="newNoteTxt" placeholder="Observations, floraisons, ressentis…"></textarea>
+      </div>
+      <button class="btn primary sm" onclick="addNote()">+ Enregistrer</button>
+    </div>
+    <div id="notesList"></div>
+  </section>
+
+  <section class="tp" id="tab-config">
+    <h2 class="tp-title">La <em>configuration</em></h2>
+    <p class="tp-sub">providers IA · jardin · données</p>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="ic">🆓</span>
+        <h3>Providers IA</h3>
+      </div>
+      <p class="dim" style="font-size:.85em;margin:0 0 8px">Groq &amp; Cerebras en primaire (14 400 req/jour gratuits). Mistral en fallback. Sélection automatique du premier provider configuré.</p>
+
+      <div class="prov-row" id="provRow"></div>
+
+      <div class="fld">
+        <label>🟢 Clé Groq · <span style="text-transform:none;color:var(--chloro-300)">console.groq.com</span></label>
+        <input type="text" class="pwd" id="keyGroq" placeholder="gsk_..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="fld">
+        <label>🔵 Clé Cerebras · <span style="text-transform:none;color:var(--chloro-300)">cloud.cerebras.ai</span></label>
+        <input type="text" class="pwd" id="keyCerebras" placeholder="csk-..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="fld">
+        <label>🟣 Clé Mistral · <span style="text-transform:none;color:var(--chloro-300)">console.mistral.ai</span></label>
+        <input type="text" class="pwd" id="keyMistral" placeholder="..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+
+      <button class="btn primary full" onclick="saveKeys()">Sauvegarder les clés</button>
+      <button class="btn ghost sm full mt-sm" onclick="testProviders()">🧪 Tester les providers</button>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="ic">🌍</span>
+        <h3>Jardin</h3>
+      </div>
+      <div class="tele">
+        <div class="tele-cell"><div class="lb">Lieu</div><div class="vl" style="font-size:.95em">La Meilleraye</div><div class="sub">Loire-Atlantique (44)</div></div>
+        <div class="tele-cell"><div class="lb">Coordonnées</div><div class="vl" style="font-size:.95em">47.55°N -1.40°W</div><div class="sub">Bretagne historique</div></div>
+        <div class="tele-cell"><div class="lb">Sol</div><div class="vl" style="font-size:.95em">Limono-argileux</div><div class="sub">drainage moyen</div></div>
+        <div class="tele-cell"><div class="lb">pH estimé</div><div class="vl" style="font-size:.95em">6.5</div><div class="sub">légèrement acide</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="ic">💾</span>
+        <h3>Données locales</h3>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost sm" onclick="exportData()">↓ Exporter JSON</button>
+        <button class="btn ghost sm" onclick="document.getElementById('importFile').click()">↑ Importer</button>
+        <input type="file" id="importFile" accept=".json,application/json" onchange="importData(event)" style="display:none">
+        <button class="btn danger sm" onclick="resetData()">⚠ Tout effacer</button>
+      </div>
+      <p class="dim" style="font-size:.75em;margin:10px 0 0;font-family:var(--f-mono)">Stockage: IndexedDB <em>OracleV24</em> + localStorage</p>
+    </div>
+
+    <div style="text-align:center;padding:20px 0">
+      <div class="display" style="font-style:italic;font-size:1.1em;color:var(--chloro-400);font-variation-settings:'opsz' 40,'SOFT' 100,'WONK' 1">— Terroir Synthétique —</div>
+      <div class="mono" style="font-size:.7em;color:var(--ink-60);margin-top:4px;text-transform:uppercase;letter-spacing:.1em">v24 · Niko Julienne Labs · 2026</div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="nav">
+  <button class="nb on" data-tab="oracle" onclick="goTab('oracle')"><span class="ic">✦</span><span class="lb">Oracle</span></button>
+  <button class="nb" data-tab="meteo" onclick="goTab('meteo')"><span class="ic">☁</span><span class="lb">Météo</span></button>
+  <button class="nb" data-tab="semences" onclick="goTab('semences')"><span class="ic">🌱</span><span class="lb">Sem.</span></button>
+  <button class="nb" data-tab="taches" onclick="goTab('taches')"><span class="ic">✓</span><span class="lb">Tâches</span></button>
+  <button class="nb" data-tab="journal" onclick="goTab('journal')"><span class="ic">📖</span><span class="lb">Journal</span></button>
+  <button class="nb" data-tab="config" onclick="goTab('config')"><span class="ic">⚙</span><span class="lb">Config</span></button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+// §1 · CONSTANTS
+// ═══════════════════════════════════════════════════════════
+var GARDEN = {
+  name: "La Meilleraye-de-Bretagne",
+  lat: 47.55,
+  lon: -1.40,
+  soil: {
+    label: "Limono-argileux",
+    drainage: "moyen",
+    retention: "bonne",
+    ph: 6.5,
+    risques: "compaction, battance, asphyxie hivernale"
+  },
+  dept: "Loire-Atlantique (44)"
+};
+
+var MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+var DAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+var DAYS_SHORT = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+
+var PROVIDERS = {
+  groq: {
+    id: 'groq',
+    name: 'Groq',
+    emoji: '🟢',
+    endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+    keyStore: 'ovj_key_groq',
+    model: 'llama-3.3-70b-versatile',
+    supportsVision: false,
+    limit: '14 400/jour',
+    free: true
+  },
+  cerebras: {
+    id: 'cerebras',
+    name: 'Cerebras',
+    emoji: '🔵',
+    endpoint: 'https://api.cerebras.ai/v1/chat/completions',
+    keyStore: 'ovj_key_cerebras',
+    model: 'llama-3.3-70b',
+    supportsVision: false,
+    limit: '14 400/jour',
+    free: true
+  },
+  mistral: {
+    id: 'mistral',
+    name: 'Mistral',
+    emoji: '🟣',
+    endpoint: 'https://api.mistral.ai/v1/chat/completions',
+    keyStore: 'ovj_key_mistral',
+    model: 'mistral-small-latest',
+    supportsVision: true,
+    limit: '1 req/s',
+    free: true
+  }
+};
+
+var PROV_ORDER = ['groq','cerebras','mistral'];
+
+// Weather code → emoji + label (WMO)
+var WMO = {
+  0:['☀','Ciel clair'], 1:['🌤','Peu nuageux'], 2:['⛅','Partiellement nuageux'], 3:['☁','Couvert'],
+  45:['🌫','Brouillard'], 48:['🌫','Brouillard givrant'],
+  51:['🌦','Bruine légère'], 53:['🌦','Bruine modérée'], 55:['🌦','Bruine dense'],
+  61:['🌧','Pluie faible'], 63:['🌧','Pluie modérée'], 65:['🌧','Pluie forte'],
+  66:['🌧','Pluie verglaçante'], 67:['🌧','Pluie verglaçante forte'],
+  71:['🌨','Neige faible'], 73:['🌨','Neige modérée'], 75:['🌨','Neige forte'],
+  77:['🌨','Grésil'],
+  80:['🌦','Averses faibles'], 81:['🌦','Averses modérées'], 82:['⛈','Averses violentes'],
+  85:['🌨','Averses neige'], 86:['🌨','Averses neige fortes'],
+  95:['⛈','Orage'], 96:['⛈','Orage grêle'], 99:['⛈','Orage grêle fort']
+};
+
+// ═══════════════════════════════════════════════════════════
+// §2 · STATE
+// ═══════════════════════════════════════════════════════════
+var db = null;
+var meteoCache = null;
+var meteoCacheTs = 0;
+var airCache = null;
+var lastOracleResult = null;
+
+// ═══════════════════════════════════════════════════════════
+// §3 · UTILS
+// ═══════════════════════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+
+function esc(s){
+  if(s == null) return '';
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function sanitizeKey(k){
+  if(!k) return '';
+  return String(k).trim()
+    .replace(/[\u200B-\u200D\uFEFF\u00AD]/g,'')
+    .replace(/[^\x20-\x7E]/g,'');
+}
+
+function getKey(providerId){
+  var p = PROVIDERS[providerId];
+  if(!p) return '';
+  try { return sanitizeKey(localStorage.getItem(p.keyStore) || ''); }
+  catch(e){ return ''; }
+}
+
+function setKey(providerId, key){
+  var p = PROVIDERS[providerId];
+  if(!p) return;
+  var clean = sanitizeKey(key);
+  try {
+    if(clean) localStorage.setItem(p.keyStore, clean);
+    else localStorage.removeItem(p.keyStore);
+  } catch(e){}
+}
+
+function showToast(msg, kind){
+  var t = $('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.className = 'on ' + (kind || '');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(function(){ t.className = ''; }, 2800);
+}
+
+function fmtFullDate(d){
+  return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+}
+
+function fmtAgo(ts){
+  var diff = Date.now() - ts;
+  if(diff < 60000) return "à l'instant";
+  if(diff < 3600000) return 'il y a ' + Math.floor(diff/60000) + ' min';
+  if(diff < 86400000) return 'il y a ' + Math.floor(diff/3600000) + ' h';
+  var d = new Date(ts);
+  return d.getDate() + '/' + (d.getMonth()+1) + '/' + String(d.getFullYear()).slice(2);
+}
+
+function getSeason(){
+  var m = new Date().getMonth();
+  if(m<=1 || m===11) return 'hiver';
+  if(m<=4) return 'printemps';
+  if(m<=7) return 'été';
+  return 'automne';
+}
+
+function greetingByHour(){
+  var h = new Date().getHours();
+  if(h < 5) return 'Bonne nuit';
+  if(h < 12) return 'Bonjour';
+  if(h < 18) return 'Bon après-midi';
+  return 'Bonsoir';
+}
+
+// XMLHttpRequest wrappers — Android null-origin compat
+function xhrPost(url, body, headers, timeoutMs){
+  return new Promise(function(resolve, reject){
+    try {
+      var x = new XMLHttpRequest();
+      x.open('POST', url, true);
+      x.setRequestHeader('Content-Type','application/json');
+      if(headers){
+        for(var k in headers){
+          if(headers.hasOwnProperty(k)) x.setRequestHeader(k, headers[k]);
+        }
+      }
+      x.timeout = timeoutMs || 60000;
+      x.onload = function(){
+        if(x.status >= 200 && x.status < 300){
+          try { resolve(JSON.parse(x.responseText)); }
+          catch(e){ reject(new Error('Réponse non-JSON')); }
+        } else {
+          var msg = 'HTTP ' + x.status;
+          try {
+            var j = JSON.parse(x.responseText);
+            msg += ' — ' + (j.error && j.error.message || j.message || x.responseText.slice(0,140));
+          } catch(e){
+            if(x.responseText) msg += ' — ' + x.responseText.slice(0,140);
+          }
+          var err = new Error(msg);
+          err.status = x.status;
+          reject(err);
+        }
+      };
+      x.onerror = function(){ reject(new Error('Erreur réseau')); };
+      x.ontimeout = function(){ reject(new Error('Timeout ' + (x.timeout/1000) + 's')); };
+      x.send(JSON.stringify(body));
+    } catch(e){ reject(e); }
+  });
+}
+
+function xhrGet(url, timeoutMs){
+  return new Promise(function(resolve, reject){
+    try {
+      var x = new XMLHttpRequest();
+      x.open('GET', url, true);
+      x.timeout = timeoutMs || 20000;
+      x.onload = function(){
+        if(x.status >= 200 && x.status < 300){
+          try { resolve(JSON.parse(x.responseText)); }
+          catch(e){ reject(new Error('Réponse non-JSON')); }
+        } else reject(new Error('HTTP ' + x.status));
+      };
+      x.onerror = function(){ reject(new Error('Erreur réseau')); };
+      x.ontimeout = function(){ reject(new Error('Timeout')); };
+      x.send();
+    } catch(e){ reject(e); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §4 · INDEXEDDB
+// ═══════════════════════════════════════════════════════════
+function openDB(){
+  return new Promise(function(resolve, reject){
+    try {
+      var req = indexedDB.open('OracleV24', 1);
+      req.onerror = function(){ reject(req.error); };
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onupgradeneeded = function(e){
+        var d = e.target.result;
+        if(!d.objectStoreNames.contains('seeds'))
+          d.createObjectStore('seeds', { keyPath:'id', autoIncrement:true });
+        if(!d.objectStoreNames.contains('tasks'))
+          d.createObjectStore('tasks', { keyPath:'id', autoIncrement:true });
+        if(!d.objectStoreNames.contains('notes'))
+          d.createObjectStore('notes', { keyPath:'id', autoIncrement:true });
+        if(!d.objectStoreNames.contains('oracle'))
+          d.createObjectStore('oracle', { keyPath:'id', autoIncrement:true });
+      };
+    } catch(e){ reject(e); }
+  });
+}
+
+function dbGetAll(store){
+  return new Promise(function(resolve, reject){
+    if(!db){ resolve([]); return; }
+    try {
+      var tx = db.transaction(store, 'readonly');
+      var req = tx.objectStore(store).getAll();
+      req.onsuccess = function(){ resolve(req.result || []); };
+      req.onerror = function(){ reject(req.error); };
+    } catch(e){ resolve([]); }
+  });
+}
+
+function dbAdd(store, obj){
+  return new Promise(function(resolve, reject){
+    if(!db){ reject(new Error('DB non prête')); return; }
+    try {
+      var tx = db.transaction(store, 'readwrite');
+      var req = tx.objectStore(store).add(obj);
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error); };
+    } catch(e){ reject(e); }
+  });
+}
+
+function dbPut(store, obj){
+  return new Promise(function(resolve, reject){
+    if(!db){ reject(new Error('DB non prête')); return; }
+    try {
+      var tx = db.transaction(store, 'readwrite');
+      var req = tx.objectStore(store).put(obj);
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error); };
+    } catch(e){ reject(e); }
+  });
+}
+
+function dbDelete(store, id){
+  return new Promise(function(resolve, reject){
+    if(!db){ reject(new Error('DB non prête')); return; }
+    try {
+      var tx = db.transaction(store, 'readwrite');
+      var req = tx.objectStore(store).delete(id);
+      req.onsuccess = function(){ resolve(); };
+      req.onerror = function(){ reject(req.error); };
+    } catch(e){ reject(e); }
+  });
+}
+
+function dbClear(store){
+  return new Promise(function(resolve, reject){
+    if(!db){ reject(new Error('DB non prête')); return; }
+    try {
+      var tx = db.transaction(store, 'readwrite');
+      var req = tx.objectStore(store).clear();
+      req.onsuccess = function(){ resolve(); };
+      req.onerror = function(){ reject(req.error); };
+    } catch(e){ reject(e); }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §5 · AGENT · METEO (Open-Meteo)
+// ═══════════════════════════════════════════════════════════
+function fetchMeteo(force){
+  if(!force && meteoCache && (Date.now() - meteoCacheTs) < 600000){
+    return Promise.resolve(meteoCache);
+  }
+  var url = 'https://api.open-meteo.com/v1/forecast'
+    + '?latitude=' + GARDEN.lat + '&longitude=' + GARDEN.lon
+    + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weather_code'
+    + '&hourly=temperature_2m,precipitation_probability,precipitation,weather_code'
+    + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,sunrise,sunset,uv_index_max'
+    + '&timezone=Europe%2FParis&forecast_days=7';
+  return xhrGet(url).then(function(data){
+    meteoCache = data;
+    meteoCacheTs = Date.now();
+    return data;
+  });
+}
+
+function fetchAirQuality(){
+  if(airCache && (Date.now() - airCache.ts) < 1800000) return Promise.resolve(airCache.data);
+  var url = 'https://air-quality-api.open-meteo.com/v1/air-quality'
+    + '?latitude=' + GARDEN.lat + '&longitude=' + GARDEN.lon
+    + '&current=pm2_5,pm10,european_aqi&timezone=Europe%2FParis';
+  return xhrGet(url).then(function(d){
+    airCache = { data:d, ts:Date.now() };
+    return d;
+  }).catch(function(){ return null; });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §6 · AGENT · LUNE
+// ═══════════════════════════════════════════════════════════
+function computeMoon(date){
+  date = date || new Date();
+  // Known new moon reference: 2000-01-06 18:14 UTC
+  var ref = Date.UTC(2000, 0, 6, 18, 14);
+  var synodic = 29.53058867;
+  var days = (date.getTime() - ref) / 86400000;
+  var phase = ((days % synodic) + synodic) % synodic;
+  var pct = phase / synodic; // 0..1
+
+  var label, emoji, waxing;
+  if(pct < 0.03 || pct > 0.97){ label='Nouvelle lune'; emoji='🌑'; waxing=true; }
+  else if(pct < 0.22){ label='Premier croissant'; emoji='🌒'; waxing=true; }
+  else if(pct < 0.28){ label='Premier quartier'; emoji='🌓'; waxing=true; }
+  else if(pct < 0.47){ label='Gibbeuse croissante'; emoji='🌔'; waxing=true; }
+  else if(pct < 0.53){ label='Pleine lune'; emoji='🌕'; waxing=false; }
+  else if(pct < 0.72){ label='Gibbeuse décroissante'; emoji='🌖'; waxing=false; }
+  else if(pct < 0.78){ label='Dernier quartier'; emoji='🌗'; waxing=false; }
+  else { label='Dernier croissant'; emoji='🌘'; waxing=false; }
+
+  // Biodynamic day type (simplified 4-day cycle)
+  var types = ['Jour Feuille','Jour Fruit','Jour Racine','Jour Fleur'];
+  var typeIdx = Math.floor(pct * 12) % 4;
+  var type = types[typeIdx];
+  var typeAction = {
+    'Jour Feuille':'salades, choux, épinards — arrosage, taille des feuillages',
+    'Jour Fruit':'tomates, courges, haricots — semis et récolte de fruits',
+    'Jour Racine':'carottes, pommes de terre, radis — travaux au sol',
+    'Jour Fleur':'fleurs, brocolis, artichauts — soins floraux'
+  }[type];
+
+  return { label:label, emoji:emoji, pct:pct, waxing:waxing, type:type, typeAction:typeAction };
+}
+
+// ═══════════════════════════════════════════════════════════
+// §7 · RENDER · TELEMETRY + MOON
+// ═══════════════════════════════════════════════════════════
+function renderTelemetry(data){
+  var g = $('teleGrid');
+  if(!g || !data || !data.current){ return; }
+  var c = data.current;
+  var rainNext24 = 0;
+  if(data.hourly && data.hourly.precipitation){
+    for(var i=0;i<Math.min(24,data.hourly.precipitation.length);i++){
+      rainNext24 += data.hourly.precipitation[i] || 0;
+    }
+  }
+  var tempWarn = c.temperature_2m < 2 || c.temperature_2m > 32;
+  var windWarn = c.wind_speed_10m > 40;
+
+  g.innerHTML =
+    '<div class="tele-cell' + (tempWarn?' warn':'') + '"><div class="lb">Température</div>'
+    + '<div class="vl">' + c.temperature_2m.toFixed(1) + '<span class="un">°C</span></div>'
+    + '<div class="sub">ressenti ' + c.apparent_temperature.toFixed(1) + '°</div></div>'
+
+    + '<div class="tele-cell"><div class="lb">Humidité</div>'
+    + '<div class="vl">' + Math.round(c.relative_humidity_2m) + '<span class="un">%</span></div>'
+    + '<div class="sub">' + (c.relative_humidity_2m>80?'saturée':c.relative_humidity_2m>60?'confortable':c.relative_humidity_2m>40?'moyenne':'sèche') + '</div></div>'
+
+    + '<div class="tele-cell' + (windWarn?' warn':'') + '"><div class="lb">Vent</div>'
+    + '<div class="vl">' + Math.round(c.wind_speed_10m) + '<span class="un">km/h</span></div>'
+    + '<div class="sub">' + windDir(c.wind_direction_10m) + '</div></div>'
+
+    + '<div class="tele-cell"><div class="lb">Précip. 24h</div>'
+    + '<div class="vl">' + rainNext24.toFixed(1) + '<span class="un">mm</span></div>'
+    + '<div class="sub">' + (rainNext24>10?'forte':rainNext24>2?'modérée':rainNext24>0.1?'légère':'sec') + '</div></div>';
+
+  var st = $('wxStatus');
+  if(st) st.innerHTML = '<span class="hd-dot"></span> live';
+}
+
+function windDir(deg){
+  if(deg == null) return '—';
+  var dirs = ['N','NE','E','SE','S','SO','O','NO'];
+  return dirs[Math.round(((deg % 360) / 45)) % 8];
+}
+
+function renderMoon(){
+  var m = computeMoon();
+  var lbl = $('moonLabel');
+  var typ = $('moonType');
+  if(lbl) lbl.textContent = m.emoji + ' ' + m.label;
+  if(typ) typ.textContent = m.type + ' · ' + m.typeAction;
+
+  // Visual shadow positioning
+  var shadow = $('moonShadow');
+  if(shadow){
+    var pct = m.pct;
+    // translateX from -56 (new) through 0 (full) back to -56
+    var tx;
+    if(pct < 0.5){
+      // waxing: shadow moves from covering right to fully gone
+      tx = 56 * (1 - pct * 2);
+      shadow.style.transform = 'translateX(' + (56 - tx) + 'px)';
+    } else {
+      // waning: shadow enters from right going left
+      tx = 56 * ((pct - 0.5) * 2);
+      shadow.style.transform = 'translateX(' + (-56 + tx) + 'px)';
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// §8 · ORACLE · PROMPT + API
+// ═══════════════════════════════════════════════════════════
+function buildPromptCompact(context){
+  var date = fmtFullDate(new Date());
+  var w = context.weather.current;
+  var rain = context.rain24 || 0;
+  var m = context.moon;
+  var season = getSeason();
+  var airStr = context.air && context.air.current ? ('PM2.5 ' + context.air.current.pm2_5.toFixed(1) + 'µg/m³, IQA ' + context.air.current.european_aqi) : 'N/A';
+  var seedsActive = context.seeds.filter(function(s){
+    return s.status === 'pousse' || s.status === 'germé' || s.status === 'semé';
+  }).slice(0, 12);
+  var seedsStr = seedsActive.length
+    ? seedsActive.map(function(s){ return s.name + '(' + s.status + ')'; }).join(', ')
+    : 'aucune';
+
+  return 'Tu es L\'Oracle, expert agronome en permaculture biodynamique, Loire-Atlantique 44, France.\n'
+    + 'Jardin: ' + GARDEN.name + ' (' + GARDEN.lat + ',' + GARDEN.lon + '), sol ' + GARDEN.soil.label
+    + ' pH ' + GARDEN.soil.ph + ', drainage ' + GARDEN.soil.drainage + ', risques ' + GARDEN.soil.risques + '.\n'
+    + 'Date: ' + date + ', saison ' + season + '.\n'
+    + 'Météo live: ' + w.temperature_2m.toFixed(1) + '°C (ressenti ' + w.apparent_temperature.toFixed(1) + '°), '
+    + 'hum ' + Math.round(w.relative_humidity_2m) + '%, vent ' + Math.round(w.wind_speed_10m) + 'km/h ' + windDir(w.wind_direction_10m)
+    + ', précip 24h prévues ' + rain.toFixed(1) + 'mm.\n'
+    + 'Air: ' + airStr + '.\n'
+    + 'Lune: ' + m.label + ', ' + m.type + '.\n'
+    + 'Semences actives: ' + seedsStr + '.\n\n'
+    + 'Réponds UNIQUEMENT en JSON strict valide (pas de markdown, pas de backticks), format exact:\n'
+    + '{"do":["action1","action2","action3"],"dont":["évite1","évite2"],"forecast":["prévision1","prévision2"],"summary":"phrase poétique de synthèse en une ligne"}\n'
+    + 'do: 3-5 actions concrètes prioritaires aujourd\'hui, adaptées au sol, au climat breton, à la saison, à la lune. Précise les cultures concernées.\n'
+    + 'dont: 2-3 erreurs à éviter aujourd\'hui.\n'
+    + 'forecast: 2-3 éléments à anticiper sur 48-72h.\n'
+    + 'summary: 1 phrase évocatrice, ton poétique mais précis.\n'
+    + 'Chaque élément max 140 caractères. Commence directement par {.';
+}
+
+function pickActiveProvider(){
+  for(var i=0;i<PROV_ORDER.length;i++){
+    var pid = PROV_ORDER[i];
+    if(getKey(pid)) return pid;
+  }
+  return null;
+}
+
+function callProvider(providerId, prompt){
+  var p = PROVIDERS[providerId];
+  var key = getKey(providerId);
+  if(!p) return Promise.reject(new Error('Provider inconnu'));
+  if(!key) return Promise.reject(new Error('Clé ' + p.name + ' manquante'));
+
+  var body = {
+    model: p.model,
+    messages: [{ role:'user', content: prompt }],
+    temperature: 0.6,
+    max_tokens: 1200
+  };
+  return xhrPost(p.endpoint, body, { 'Authorization': 'Bearer ' + key }, 60000)
+    .then(function(res){
+      var txt = res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content;
+      if(!txt) throw new Error('Réponse vide');
+      return { text: txt, provider: p.name };
+    });
+}
+
+function callWithFallback(prompt){
+  var tried = [];
+  var active = pickActiveProvider();
+  if(!active) return Promise.reject(new Error('Aucune clé configurée — onglet Config'));
+
+  // Reorder starting from active provider, keeping all configured ones
+  var order = [active].concat(PROV_ORDER.filter(function(p){ return p !== active && getKey(p); }));
+
+  function tryNext(i){
+    if(i >= order.length){
+      return Promise.reject(new Error('Tous les providers ont échoué: ' + tried.join(' / ')));
+    }
+    var pid = order[i];
+    return callProvider(pid, prompt).catch(function(e){
+      tried.push(PROVIDERS[pid].name + ':' + (e.message || 'err').slice(0,30));
+      if(i < order.length - 1){
+        showToast('↪ Fallback ' + PROVIDERS[order[i+1]].name, 'ok');
+      }
+      return tryNext(i + 1);
+    });
+  }
+  return tryNext(0);
+}
+
+function parseOracleJSON(raw){
+  if(!raw) throw new Error('Réponse vide');
+  // Clean markdown fences
+  var clean = String(raw).trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/, '')
+    .replace(/\s*```\s*$/, '')
+    .trim();
+  // Extract first {...} block
+  var start = clean.indexOf('{');
+  var end = clean.lastIndexOf('}');
+  if(start < 0 || end < 0) throw new Error('JSON introuvable dans la réponse');
+  clean = clean.slice(start, end + 1);
+  var parsed = JSON.parse(clean);
+  if(!Array.isArray(parsed.do)) parsed.do = [];
+  if(!Array.isArray(parsed.dont)) parsed.dont = [];
+  if(!Array.isArray(parsed.forecast)) parsed.forecast = [];
+  if(typeof parsed.summary !== 'string') parsed.summary = '';
+  return parsed;
+}
+
+function launchOracle(){
+  var btn = $('btnOracle');
+  var lbl = $('btnOracleLbl');
+  var out = $('oracleOutput');
+  if(!btn || !out) return;
+
+  var active = pickActiveProvider();
+  if(!active){
+    showToast('Configure une clé IA (onglet Config)', 'err');
+    goTab('config');
+    return;
+  }
+
+  btn.disabled = true;
+  if(lbl) lbl.innerHTML = '<span class="loader"></span> <span>Consultation en cours…</span>';
+  out.innerHTML = '<div class="card"><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div></div>';
+
+  // Gather context
+  var ctxPromise = Promise.all([
+    fetchMeteo(),
+    fetchAirQuality(),
+    dbGetAll('seeds')
+  ]).then(function(results){
+    var meteo = results[0];
+    var air = results[1];
+    var seeds = results[2];
+    var rain24 = 0;
+    if(meteo.hourly && meteo.hourly.precipitation){
+      for(var i=0;i<Math.min(24,meteo.hourly.precipitation.length);i++){
+        rain24 += meteo.hourly.precipitation[i] || 0;
+      }
+    }
+    return {
+      weather: meteo,
+      air: air,
+      seeds: seeds,
+      rain24: rain24,
+      moon: computeMoon()
+    };
+  });
+
+  ctxPromise.then(function(ctx){
+    var prompt = buildPromptCompact(ctx);
+    return callWithFallback(prompt).then(function(res){
+      var parsed = parseOracleJSON(res.text);
+      lastOracleResult = { ...parsed, provider: res.provider, ts: Date.now() };
+      // Save to IDB
+      dbAdd('oracle', {
+        ts: Date.now(),
+        provider: res.provider,
+        data: parsed
+      }).catch(function(){});
+      renderOracleResult(parsed, res.provider);
+    });
+  }).catch(function(err){
+    out.innerHTML = '<div class="card" style="border-color:rgba(248,113,113,.3)">'
+      + '<div style="color:var(--alert);font-weight:600;margin-bottom:6px">⚠ Consultation échouée</div>'
+      + '<div style="font-size:.88em;color:var(--ink-80)">' + esc(err.message) + '</div>'
+      + '<button class="btn ghost sm mt-md" onclick="launchOracle()">↻ Réessayer</button>'
+      + '</div>';
+    showToast('Oracle indisponible', 'err');
+  }).then(function(){
+    btn.disabled = false;
+    if(lbl) lbl.innerHTML = '<span class="ic">✦</span> <span>Consulter à nouveau</span>';
+  });
+}
+
+function renderOracleResult(r, providerName){
+  var out = $('oracleOutput');
+  if(!out) return;
+
+  var html = '';
+
+  // DO list
+  if(r.do.length){
+    html += '<div class="section-head"><span class="n">À faire aujourd\'hui</span><span class="rule"></span></div>';
+    html += '<ul class="action-list do stagger">';
+    r.do.forEach(function(item, i){
+      html += '<li><span class="bullet">' + (i+1) + '</span><div class="txt">' + esc(item) + '</div></li>';
+    });
+    html += '</ul>';
+  }
+
+  // DONT list
+  if(r.dont.length){
+    html += '<div class="section-head"><span class="n">À éviter</span><span class="rule"></span></div>';
+    html += '<ul class="action-list dont stagger">';
+    r.dont.forEach(function(item){
+      html += '<li><span class="bullet">✕</span><div class="txt">' + esc(item) + '</div></li>';
+    });
+    html += '</ul>';
+  }
+
+  // FORECAST
+  if(r.forecast.length){
+    html += '<div class="section-head"><span class="n">À anticiper 48-72h</span><span class="rule"></span></div>';
+    html += '<ul class="action-list forecast stagger">';
+    r.forecast.forEach(function(item){
+      html += '<li><span class="bullet">→</span><div class="txt">' + esc(item) + '</div></li>';
+    });
+    html += '</ul>';
+  }
+
+  // SUMMARY
+  if(r.summary){
+    html += '<div class="summary-box"><div class="txt">' + esc(r.summary) + '</div></div>';
+  }
+
+  // Provider footer
+  html += '<div class="mono" style="text-align:center;font-size:.7em;color:var(--ink-60);margin-top:14px;text-transform:uppercase;letter-spacing:.1em">'
+    + 'Via ' + esc(providerName) + ' · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) + '</div>';
+
+  out.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// §9 · METEO TAB RENDERING
+// ═══════════════════════════════════════════════════════════
+function renderMeteoTab(){
+  var container = $('meteoContent');
+  if(!container) return;
+  container.innerHTML = '<div class="card"><div class="skel"></div><div class="skel" style="width:70%"></div></div>';
+
+  fetchMeteo(true).then(function(data){
+    var html = '';
+
+    // Current card
+    var c = data.current;
+    var code = c.weather_code;
+    var wmo = WMO[code] || ['❓','Inconnu'];
+    html += '<div class="hero" style="margin-bottom:16px">'
+      + '<div class="hero-eyebrow">' + fmtFullDate(new Date()) + ' · maintenant</div>'
+      + '<h2 style="display:flex;align-items:center;gap:14px">'
+      + '<span style="font-size:2.4em;line-height:1">' + wmo[0] + '</span>'
+      + '<span><em>' + c.temperature_2m.toFixed(1) + '°</em></span></h2>'
+      + '<div style="font-size:.95em;color:var(--ink-80);margin-top:4px">' + wmo[1]
+      + ' · ressenti ' + c.apparent_temperature.toFixed(1) + '° · vent ' + Math.round(c.wind_speed_10m) + 'km/h ' + windDir(c.wind_direction_10m) + '</div>'
+      + '</div>';
+
+    // 7-day forecast
+    if(data.daily){
+      html += '<div class="card"><div class="card-hd"><span class="ic">📅</span><h3>Prévisions 7 jours</h3></div>';
+      var n = data.daily.time.length;
+      for(var i=0;i<n;i++){
+        var d = new Date(data.daily.time[i]);
+        var dyLabel = i === 0 ? 'Aujourd\'hui' : DAYS_SHORT[d.getDay()] + ' ' + d.getDate();
+        var wc = data.daily.weather_code[i];
+        var w = WMO[wc] || ['❓','?'];
+        var tmax = Math.round(data.daily.temperature_2m_max[i]);
+        var tmin = Math.round(data.daily.temperature_2m_min[i]);
+        var pp = data.daily.precipitation_sum[i] || 0;
+        html += '<div class="day-row">'
+          + '<div class="dy">' + dyLabel + '</div>'
+          + '<div class="ic" title="' + esc(w[1]) + '">' + w[0] + '</div>'
+          + '<div style="flex:1;font-size:.78em;color:var(--ink-60)">' + esc(w[1]) + '</div>'
+          + '<div class="rn">' + (pp > 0.1 ? pp.toFixed(1) + 'mm' : '—') + '</div>'
+          + '<div class="tmp"><strong>' + tmax + '°</strong> <span style="color:var(--ink-60)">/ ' + tmin + '°</span></div>'
+          + '</div>';
+      }
+      html += '</div>';
+    }
+
+    // Sunrise/Sunset
+    if(data.daily && data.daily.sunrise){
+      var sr = new Date(data.daily.sunrise[0]);
+      var ss = new Date(data.daily.sunset[0]);
+      var uv = data.daily.uv_index_max[0];
+      html += '<div class="card"><div class="card-hd"><span class="ic">☀</span><h3>Soleil aujourd\'hui</h3></div>'
+        + '<div class="tele">'
+        + '<div class="tele-cell"><div class="lb">Lever</div><div class="vl">' + pad2(sr.getHours()) + ':' + pad2(sr.getMinutes()) + '</div></div>'
+        + '<div class="tele-cell"><div class="lb">Coucher</div><div class="vl">' + pad2(ss.getHours()) + ':' + pad2(ss.getMinutes()) + '</div></div>'
+        + '<div class="tele-cell"><div class="lb">UV max</div><div class="vl">' + (uv != null ? uv.toFixed(1) : '—') + '</div></div>'
+        + '<div class="tele-cell"><div class="lb">Durée</div><div class="vl" style="font-size:1.1em">' + fmtDuration(ss - sr) + '</div></div>'
+        + '</div></div>';
+    }
+
+    container.innerHTML = html;
+  }).catch(function(err){
+    container.innerHTML = '<div class="card" style="border-color:rgba(248,113,113,.3)">'
+      + '<div style="color:var(--alert);font-weight:600">⚠ Météo indisponible</div>'
+      + '<div style="font-size:.85em;margin-top:6px">' + esc(err.message) + '</div></div>';
+  });
+}
+
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+
+function fmtDuration(ms){
+  var totalMin = Math.floor(ms / 60000);
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  return h + 'h' + pad2(m);
+}
+
+// ═══════════════════════════════════════════════════════════
+// §10 · SEEDS
+// ═══════════════════════════════════════════════════════════
+function addSeed(){
+  var name = ($('newSeedName').value || '').trim();
+  var status = $('newSeedStatus').value || 'semé';
+  if(!name){
+    showToast('Nom requis', 'err');
+    return;
+  }
+  dbAdd('seeds', { name: name, status: status, ts: Date.now() })
+    .then(function(){
+      $('newSeedName').value = '';
+      showToast('✓ Semence ajoutée', 'ok');
+      renderSeeds();
+    })
+    .catch(function(err){ showToast('Erreur: ' + err.message, 'err'); });
+}
+
+function deleteSeed(id){
+  if(!confirm('Supprimer cette semence ?')) return;
+  dbDelete('seeds', id).then(function(){
+    showToast('Supprimé');
+    renderSeeds();
+  });
+}
+
+function cycleSeedStatus(id){
+  var order = ['semé','germé','pousse','récolté'];
+  dbGetAll('seeds').then(function(list){
+    var s = list.find(function(x){ return x.id === id; });
+    if(!s) return;
+    var idx = order.indexOf(s.status);
+    s.status = order[(idx + 1) % order.length];
+    dbPut('seeds', s).then(renderSeeds);
+  });
+}
+
+function renderSeeds(){
+  var el = $('seedsList');
+  if(!el) return;
+  dbGetAll('seeds').then(function(list){
+    if(!list.length){
+      el.innerHTML = '<div class="empty-state"><div class="ic">🌱</div><h4>Aucune semence enregistrée</h4><p>Ajoute ta première au-dessus</p></div>';
+      return;
+    }
+    list.sort(function(a,b){ return (b.ts || 0) - (a.ts || 0); });
+    var emojis = { 'semé':'🌰','germé':'🌱','pousse':'🌿','récolté':'🌾' };
+    el.innerHTML = '<div class="stagger">' + list.map(function(s){
+      var emoji = emojis[s.status] || '🌱';
+      return '<div class="list-item" onclick="cycleSeedStatus(' + s.id + ')" style="cursor:pointer">'
+        + '<div class="pic">' + emoji + '</div>'
+        + '<div class="body">'
+        + '<div class="t">' + esc(s.name) + '<span class="status-chip ' + esc(s.status) + '">' + esc(s.status) + '</span></div>'
+        + '<div class="s">' + fmtAgo(s.ts || Date.now()) + ' · tap pour changer statut</div>'
+        + '</div>'
+        + '<button class="del" onclick="event.stopPropagation();deleteSeed(' + s.id + ')" title="Supprimer">✕</button>'
+        + '</div>';
+    }).join('') + '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §11 · TASKS
+// ═══════════════════════════════════════════════════════════
+function addTask(){
+  var txt = ($('newTaskTxt').value || '').trim();
+  var date = $('newTaskDate').value || '';
+  if(!txt){ showToast('Texte requis', 'err'); return; }
+  dbAdd('tasks', { txt: txt, due: date, done: false, ts: Date.now() })
+    .then(function(){
+      $('newTaskTxt').value = '';
+      $('newTaskDate').value = '';
+      showToast('✓ Tâche ajoutée', 'ok');
+      renderTasks();
+    })
+    .catch(function(err){ showToast('Erreur: ' + err.message, 'err'); });
+}
+
+function toggleTask(id){
+  dbGetAll('tasks').then(function(list){
+    var t = list.find(function(x){ return x.id === id; });
+    if(!t) return;
+    t.done = !t.done;
+    dbPut('tasks', t).then(renderTasks);
+  });
+}
+
+function deleteTask(id){
+  dbDelete('tasks', id).then(function(){
+    showToast('Supprimé');
+    renderTasks();
+  });
+}
+
+function renderTasks(){
+  var el = $('tasksList');
+  if(!el) return;
+  dbGetAll('tasks').then(function(list){
+    if(!list.length){
+      el.innerHTML = '<div class="empty-state"><div class="ic">✓</div><h4>Aucune tâche en cours</h4><p>Ajoute ta première au-dessus</p></div>';
+      return;
+    }
+    // Sort: not-done first by due date asc, then done by ts desc
+    list.sort(function(a,b){
+      if(a.done !== b.done) return a.done ? 1 : -1;
+      if(!a.done){
+        var ad = a.due || '9999';
+        var bd = b.due || '9999';
+        return ad.localeCompare(bd);
+      }
+      return (b.ts || 0) - (a.ts || 0);
+    });
+
+    el.innerHTML = '<div class="stagger">' + list.map(function(t){
+      var dueStr = '';
+      if(t.due){
+        var dueDate = new Date(t.due);
+        var today = new Date(); today.setHours(0,0,0,0);
+        var diffDays = Math.round((dueDate - today) / 86400000);
+        if(diffDays < 0) dueStr = '⚠ en retard de ' + Math.abs(diffDays) + 'j';
+        else if(diffDays === 0) dueStr = '📍 aujourd\'hui';
+        else if(diffDays === 1) dueStr = '↗ demain';
+        else dueStr = '→ dans ' + diffDays + 'j';
+      } else {
+        dueStr = fmtAgo(t.ts || Date.now());
+      }
+      return '<div class="list-item' + (t.done ? ' done' : '') + '" onclick="toggleTask(' + t.id + ')">'
+        + '<div class="pic">' + (t.done ? '✓' : '○') + '</div>'
+        + '<div class="body">'
+        + '<div class="t">' + esc(t.txt) + '</div>'
+        + '<div class="s">' + dueStr + '</div>'
+        + '</div>'
+        + '<button class="del" onclick="event.stopPropagation();deleteTask(' + t.id + ')">✕</button>'
+        + '</div>';
+    }).join('') + '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §12 · NOTES
+// ═══════════════════════════════════════════════════════════
+function addNote(){
+  var txt = ($('newNoteTxt').value || '').trim();
+  if(!txt){ showToast('Entrée vide', 'err'); return; }
+  dbAdd('notes', { txt: txt, ts: Date.now() })
+    .then(function(){
+      $('newNoteTxt').value = '';
+      showToast('✓ Entrée enregistrée', 'ok');
+      renderNotes();
+    })
+    .catch(function(err){ showToast('Erreur: ' + err.message, 'err'); });
+}
+
+function deleteNote(id){
+  if(!confirm('Supprimer cette entrée ?')) return;
+  dbDelete('notes', id).then(function(){
+    showToast('Supprimé');
+    renderNotes();
+  });
+}
+
+function renderNotes(){
+  var el = $('notesList');
+  if(!el) return;
+  dbGetAll('notes').then(function(list){
+    if(!list.length){
+      el.innerHTML = '<div class="empty-state"><div class="ic">📖</div><h4>Journal vide</h4><p>Tes premières observations iront ici</p></div>';
+      return;
+    }
+    list.sort(function(a,b){ return (b.ts || 0) - (a.ts || 0); });
+    el.innerHTML = '<div class="stagger">' + list.map(function(n){
+      var d = new Date(n.ts);
+      var dateStr = fmtFullDate(d) + ' · ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+      return '<div class="card" style="position:relative">'
+        + '<button class="del" onclick="deleteNote(' + n.id + ')" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--ink-40);cursor:pointer;font-size:1.1em">✕</button>'
+        + '<div class="mono" style="font-size:.7em;color:var(--ink-60);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">' + dateStr + '</div>'
+        + '<div style="font-size:.92em;line-height:1.6;white-space:pre-wrap;color:var(--ink-80);padding-right:20px">' + esc(n.txt) + '</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §13 · CONFIG · KEYS
+// ═══════════════════════════════════════════════════════════
+function loadKeysIntoForm(){
+  ['groq','cerebras','mistral'].forEach(function(pid){
+    var input = $('key' + pid.charAt(0).toUpperCase() + pid.slice(1));
+    if(input) input.value = getKey(pid);
+  });
+}
+
+function saveKeys(){
+  setKey('groq', $('keyGroq').value);
+  setKey('cerebras', $('keyCerebras').value);
+  setKey('mistral', $('keyMistral').value);
+  showToast('✓ Clés sauvegardées', 'ok');
+  renderProviders();
+  updateHeaderProvider();
+}
+
+function renderProviders(){
+  var row = $('provRow');
+  if(!row) return;
+  var active = pickActiveProvider();
+  row.innerHTML = PROV_ORDER.map(function(pid){
+    var p = PROVIDERS[pid];
+    var hasKey = !!getKey(pid);
+    var isActive = pid === active;
+    var cls = 'prov-chip' + (isActive ? ' on' : '') + (hasKey ? ' ok' : '');
+    return '<span class="' + cls + '"><span class="led"></span>' + p.emoji + ' ' + p.name + ' <span class="mono dim" style="font-size:.9em">' + p.limit + '</span></span>';
+  }).join('');
+}
+
+function updateHeaderProvider(){
+  var chip = $('provChipHd');
+  if(!chip) return;
+  var active = pickActiveProvider();
+  if(active){
+    var p = PROVIDERS[active];
+    chip.textContent = p.emoji + ' ' + p.name;
+    chip.className = 'pill live';
+  } else {
+    chip.textContent = 'CONFIG →';
+    chip.className = 'pill warn';
+  }
+}
+
+function testProviders(){
+  var active = pickActiveProvider();
+  if(!active){
+    showToast('Aucune clé configurée', 'err');
+    return;
+  }
+  showToast('Test ' + PROVIDERS[active].name + '…', 'ok');
+  var prompt = 'Réponds uniquement par le chiffre 42 en un mot.';
+  callProvider(active, prompt).then(function(res){
+    showToast('✓ ' + res.provider + ' OK', 'ok');
+  }).catch(function(err){
+    showToast('✕ ' + err.message.slice(0,60), 'err');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §14 · DATA EXPORT / IMPORT / RESET
+// ═══════════════════════════════════════════════════════════
+function exportData(){
+  Promise.all([
+    dbGetAll('seeds'),
+    dbGetAll('tasks'),
+    dbGetAll('notes'),
+    dbGetAll('oracle')
+  ]).then(function(r){
+    var payload = {
+      version: 'OracleV24',
+      exported_at: new Date().toISOString(),
+      garden: GARDEN,
+      seeds: r[0],
+      tasks: r[1],
+      notes: r[2],
+      oracle_history: r[3]
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'oracle-jardinier-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✓ Export téléchargé', 'ok');
+  }).catch(function(err){
+    showToast('Erreur export: ' + err.message, 'err');
+  });
+}
+
+function importData(ev){
+  var file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var data = JSON.parse(e.target.result);
+      if(!data.version){ throw new Error('Fichier non reconnu'); }
+      if(!confirm('Importer ces données ? Les données actuelles seront conservées.')) return;
+      var tasks = [];
+      ['seeds','tasks','notes'].forEach(function(store){
+        if(Array.isArray(data[store])){
+          data[store].forEach(function(obj){
+            var clone = Object.assign({}, obj);
+            delete clone.id;
+            tasks.push(dbAdd(store, clone));
+          });
+        }
+      });
+      Promise.all(tasks).then(function(){
+        showToast('✓ Import ' + tasks.length + ' éléments', 'ok');
+        renderSeeds(); renderTasks(); renderNotes();
+      }).catch(function(err){
+        showToast('Import partiel: ' + err.message, 'err');
+      });
+    } catch(err){
+      showToast('Fichier invalide', 'err');
+    }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function resetData(){
+  if(!confirm('Effacer TOUTES les données locales (semences, tâches, journal) ? Irréversible.')) return;
+  if(!confirm('Vraiment sûr ? Dernière confirmation.')) return;
+  Promise.all([
+    dbClear('seeds'),
+    dbClear('tasks'),
+    dbClear('notes'),
+    dbClear('oracle')
+  ]).then(function(){
+    showToast('✓ Données effacées', 'ok');
+    renderSeeds(); renderTasks(); renderNotes();
+    $('oracleOutput').innerHTML = '';
+  }).catch(function(err){
+    showToast('Erreur: ' + err.message, 'err');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §15 · NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function goTab(name){
+  var tabs = document.querySelectorAll('.tp');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  var target = $('tab-' + name);
+  if(target) target.classList.add('on');
+
+  var btns = document.querySelectorAll('.nb');
+  for(var j=0;j<btns.length;j++){
+    if(btns[j].getAttribute('data-tab') === name) btns[j].classList.add('on');
+    else btns[j].classList.remove('on');
+  }
+
+  // Lazy render on tab switch
+  if(name === 'meteo') renderMeteoTab();
+  else if(name === 'semences') renderSeeds();
+  else if(name === 'taches') renderTasks();
+  else if(name === 'journal') renderNotes();
+  else if(name === 'config'){ loadKeysIntoForm(); renderProviders(); }
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════
+// §16 · ONLINE/OFFLINE
+// ═══════════════════════════════════════════════════════════
+function updateOnlineStatus(){
+  var off = $('offBadge');
+  var dot = $('liveDot');
+  if(!off || !dot) return;
+  if(navigator.onLine){
+    off.classList.add('hidden');
+    dot.classList.remove('off');
+  } else {
+    off.classList.remove('hidden');
+    dot.classList.add('off');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// §17 · INIT
+// ═══════════════════════════════════════════════════════════
+function setGreeting(){
+  var el = $('heroGreeting');
+  if(el) el.innerHTML = greetingByHour() + ', <em>jardinier</em>';
+  var d = $('hdDate');
+  if(d) d.textContent = fmtFullDate(new Date());
+}
+
+async function init(){
+  setGreeting();
+  updateOnlineStatus();
+  renderMoon();
+  updateHeaderProvider();
+
+  // Open DB
+  try {
+    db = await openDB();
+  } catch(e){
+    showToast('⚠ IndexedDB indisponible', 'err');
+    console.warn('IDB err', e);
+  }
+
+  // Live meteo on oracle tab
+  fetchMeteo().then(renderTelemetry).catch(function(err){
+    var st = $('wxStatus');
+    if(st) st.innerHTML = '<span class="hd-dot off"></span> offline';
+    console.warn('Meteo err', err);
+  });
+
+  // Visibilitychange — refresh when returning to foreground (Android bg kill guard)
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible'){
+      updateOnlineStatus();
+      // Refresh meteo if older than 10min
+      if((Date.now() - meteoCacheTs) > 600000){
+        fetchMeteo().then(renderTelemetry).catch(function(){});
+      }
+      renderMoon();
+      setGreeting();
+    }
+  });
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  // Refresh meteo every 15min
+  setInterval(function(){
+    if(document.visibilityState === 'visible' && navigator.onLine){
+      fetchMeteo(true).then(renderTelemetry).catch(function(){});
+    }
+  }, 900000);
+}
+
+// Expose for onclick handlers (safe — just in case)
+window.goTab = goTab;
+window.launchOracle = launchOracle;
+window.addSeed = addSeed;
+window.deleteSeed = deleteSeed;
+window.cycleSeedStatus = cycleSeedStatus;
+window.addTask = addTask;
+window.toggleTask = toggleTask;
+window.deleteTask = deleteTask;
+window.addNote = addNote;
+window.deleteNote = deleteNote;
+window.saveKeys = saveKeys;
+window.testProviders = testProviders;
+window.exportData = exportData;
+window.importData = importData;
+window.resetData = resetData;
+
+// Bootstrap
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
