@@ -451,7 +451,7 @@ main.main{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:14px
         <input type="file" id="importFile" accept=".json,application/json" onchange="importData(event)" style="display:none">
         <button class="btn danger sm" onclick="resetData()">⚠ Tout effacer</button>
       </div>
-      <p class="dim" style="font-size:.75em;margin:10px 0 0;font-family:var(--f-mono)">Stockage: IndexedDB <em>OracleV24</em> + localStorage</p>
+      <p class="dim" style="font-size:.75em;margin:10px 0 0;font-family:var(--f-mono)">Stockage: IndexedDB <em>OracleV24</em> + safeStorage</p>
     </div>
 
     <div style="text-align:center;padding:20px 0">
@@ -473,13 +473,24 @@ main.main{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:14px
 
 <div id="toast"></div>
 
+<script>/* Studio Niko · helpers vague C */
+window.safeStorage = window.safeStorage || (function(){var mem=new Map(),ls=null;try{ls=window.localStorage;var t='__niko__';ls.setItem(t,'1');ls.removeItem(t);}catch(e){ls=null;}
+return{getItem:function(k){try{return ls?ls.getItem(k):(mem.has(k)?mem.get(k):null);}catch(e){return mem.has(k)?mem.get(k):null;}},
+setItem:function(k,v){try{if(ls){ls.setItem(k,String(v));return;}}catch(e){}mem.set(k,String(v));},
+removeItem:function(k){try{if(ls)ls.removeItem(k);}catch(e){}mem.delete(k);},
+clear:function(){try{if(ls)ls.clear();}catch(e){}mem.clear();},
+key:function(i){try{if(ls)return ls.key(i);}catch(e){}var a=Array.from(mem.keys());return i<a.length?a[i]:null;},
+get length(){try{if(ls)return ls.length;}catch(e){}return mem.size;}};})();
+window.nikoFetch = window.nikoFetch || function(url,opts){function xhr(){opts=opts||{};return new Promise(function(res,rej){var x=new XMLHttpRequest();x.open((opts.method||'GET'),url,true);if(opts.headers){Object.keys(opts.headers).forEach(function(h){try{x.setRequestHeader(h,opts.headers[h]);}catch(e){}});}x.onload=function(){res({ok:x.status>=200&&x.status<300,status:x.status,statusText:x.statusText,url:url,text:function(){return Promise.resolve(x.responseText);},json:function(){return Promise.resolve(JSON.parse(x.responseText));},headers:{get:function(n){return x.getResponseHeader(n);}}});};x.onerror=function(){rej(new TypeError('Network request failed'));};x.send(opts.body||null);});}
+if(window.fetch){return window.fetch(url,opts).catch(function(){return xhr();});}return xhr();};
+</script>
 <script>
 'use strict';
 
 // ═══════════════════════════════════════════════════════════
 // §1 · CONSTANTS
 // ═══════════════════════════════════════════════════════════
-var GARDEN = {
+let GARDEN = {
   name: "La Meilleraye-de-Bretagne",
   lat: 47.55,
   lon: -1.40,
@@ -493,11 +504,11 @@ var GARDEN = {
   dept: "Loire-Atlantique (44)"
 };
 
-var MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-var DAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-var DAYS_SHORT = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+let MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+let DAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+let DAYS_SHORT = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
 
-var PROVIDERS = {
+let PROVIDERS = {
   groq: {
     id: 'groq',
     name: 'Groq',
@@ -533,10 +544,10 @@ var PROVIDERS = {
   }
 };
 
-var PROV_ORDER = ['groq','cerebras','mistral'];
+let PROV_ORDER = ['groq','cerebras','mistral'];
 
 // Weather code → emoji + label (WMO)
-var WMO = {
+let WMO = {
   0:['☀','Ciel clair'], 1:['🌤','Peu nuageux'], 2:['⛅','Partiellement nuageux'], 3:['☁','Couvert'],
   45:['🌫','Brouillard'], 48:['🌫','Brouillard givrant'],
   51:['🌦','Bruine légère'], 53:['🌦','Bruine modérée'], 55:['🌦','Bruine dense'],
@@ -552,11 +563,11 @@ var WMO = {
 // ═══════════════════════════════════════════════════════════
 // §2 · STATE
 // ═══════════════════════════════════════════════════════════
-var db = null;
-var meteoCache = null;
-var meteoCacheTs = 0;
-var airCache = null;
-var lastOracleResult = null;
+let db = null;
+let meteoCache = null;
+let meteoCacheTs = 0;
+let airCache = null;
+let lastOracleResult = null;
 
 // ═══════════════════════════════════════════════════════════
 // §3 · UTILS
@@ -578,24 +589,24 @@ function sanitizeKey(k){
 }
 
 function getKey(providerId){
-  var p = PROVIDERS[providerId];
+  let p = PROVIDERS[providerId];
   if(!p) return '';
-  try { return sanitizeKey(localStorage.getItem(p.keyStore) || ''); }
+  try { return sanitizeKey(safeStorage.getItem(p.keyStore) || ''); }
   catch(e){ return ''; }
 }
 
 function setKey(providerId, key){
-  var p = PROVIDERS[providerId];
+  let p = PROVIDERS[providerId];
   if(!p) return;
-  var clean = sanitizeKey(key);
+  let clean = sanitizeKey(key);
   try {
-    if(clean) localStorage.setItem(p.keyStore, clean);
-    else localStorage.removeItem(p.keyStore);
+    if(clean) safeStorage.setItem(p.keyStore, clean);
+    else safeStorage.removeItem(p.keyStore);
   } catch(e){}
 }
 
 function showToast(msg, kind){
-  var t = $('toast');
+  let t = $('toast');
   if(!t) return;
   t.textContent = msg;
   t.className = 'on ' + (kind || '');
@@ -608,16 +619,16 @@ function fmtFullDate(d){
 }
 
 function fmtAgo(ts){
-  var diff = Date.now() - ts;
+  let diff = Date.now() - ts;
   if(diff < 60000) return "à l'instant";
   if(diff < 3600000) return 'il y a ' + Math.floor(diff/60000) + ' min';
   if(diff < 86400000) return 'il y a ' + Math.floor(diff/3600000) + ' h';
-  var d = new Date(ts);
+  let d = new Date(ts);
   return d.getDate() + '/' + (d.getMonth()+1) + '/' + String(d.getFullYear()).slice(2);
 }
 
 function getSeason(){
-  var m = new Date().getMonth();
+  let m = new Date().getMonth();
   if(m<=1 || m===11) return 'hiver';
   if(m<=4) return 'printemps';
   if(m<=7) return 'été';
@@ -625,7 +636,7 @@ function getSeason(){
 }
 
 function greetingByHour(){
-  var h = new Date().getHours();
+  let h = new Date().getHours();
   if(h < 5) return 'Bonne nuit';
   if(h < 12) return 'Bonjour';
   if(h < 18) return 'Bon après-midi';
@@ -636,11 +647,11 @@ function greetingByHour(){
 function xhrPost(url, body, headers, timeoutMs){
   return new Promise(function(resolve, reject){
     try {
-      var x = new XMLHttpRequest();
+      let x = new XMLHttpRequest();
       x.open('POST', url, true);
       x.setRequestHeader('Content-Type','application/json');
       if(headers){
-        for(var k in headers){
+        for(let k in headers){
           if(headers.hasOwnProperty(k)) x.setRequestHeader(k, headers[k]);
         }
       }
@@ -650,14 +661,14 @@ function xhrPost(url, body, headers, timeoutMs){
           try { resolve(JSON.parse(x.responseText)); }
           catch(e){ reject(new Error('Réponse non-JSON')); }
         } else {
-          var msg = 'HTTP ' + x.status;
+          let msg = 'HTTP ' + x.status;
           try {
-            var j = JSON.parse(x.responseText);
+            let j = JSON.parse(x.responseText);
             msg += ' — ' + (j.error && j.error.message || j.message || x.responseText.slice(0,140));
           } catch(e){
             if(x.responseText) msg += ' — ' + x.responseText.slice(0,140);
           }
-          var err = new Error(msg);
+          let err = new Error(msg);
           err.status = x.status;
           reject(err);
         }
@@ -672,7 +683,7 @@ function xhrPost(url, body, headers, timeoutMs){
 function xhrGet(url, timeoutMs){
   return new Promise(function(resolve, reject){
     try {
-      var x = new XMLHttpRequest();
+      let x = new XMLHttpRequest();
       x.open('GET', url, true);
       x.timeout = timeoutMs || 20000;
       x.onload = function(){
@@ -694,11 +705,11 @@ function xhrGet(url, timeoutMs){
 function openDB(){
   return new Promise(function(resolve, reject){
     try {
-      var req = indexedDB.open('OracleV24', 1);
+      let req = indexedDB.open('OracleV24', 1);
       req.onerror = function(){ reject(req.error); };
       req.onsuccess = function(){ resolve(req.result); };
       req.onupgradeneeded = function(e){
-        var d = e.target.result;
+        let d = e.target.result;
         if(!d.objectStoreNames.contains('seeds'))
           d.createObjectStore('seeds', { keyPath:'id', autoIncrement:true });
         if(!d.objectStoreNames.contains('tasks'))
@@ -716,8 +727,8 @@ function dbGetAll(store){
   return new Promise(function(resolve, reject){
     if(!db){ resolve([]); return; }
     try {
-      var tx = db.transaction(store, 'readonly');
-      var req = tx.objectStore(store).getAll();
+      let tx = db.transaction(store, 'readonly');
+      let req = tx.objectStore(store).getAll();
       req.onsuccess = function(){ resolve(req.result || []); };
       req.onerror = function(){ reject(req.error); };
     } catch(e){ resolve([]); }
@@ -728,8 +739,8 @@ function dbAdd(store, obj){
   return new Promise(function(resolve, reject){
     if(!db){ reject(new Error('DB non prête')); return; }
     try {
-      var tx = db.transaction(store, 'readwrite');
-      var req = tx.objectStore(store).add(obj);
+      let tx = db.transaction(store, 'readwrite');
+      let req = tx.objectStore(store).add(obj);
       req.onsuccess = function(){ resolve(req.result); };
       req.onerror = function(){ reject(req.error); };
     } catch(e){ reject(e); }
@@ -740,8 +751,8 @@ function dbPut(store, obj){
   return new Promise(function(resolve, reject){
     if(!db){ reject(new Error('DB non prête')); return; }
     try {
-      var tx = db.transaction(store, 'readwrite');
-      var req = tx.objectStore(store).put(obj);
+      let tx = db.transaction(store, 'readwrite');
+      let req = tx.objectStore(store).put(obj);
       req.onsuccess = function(){ resolve(req.result); };
       req.onerror = function(){ reject(req.error); };
     } catch(e){ reject(e); }
@@ -752,8 +763,8 @@ function dbDelete(store, id){
   return new Promise(function(resolve, reject){
     if(!db){ reject(new Error('DB non prête')); return; }
     try {
-      var tx = db.transaction(store, 'readwrite');
-      var req = tx.objectStore(store).delete(id);
+      let tx = db.transaction(store, 'readwrite');
+      let req = tx.objectStore(store).delete(id);
       req.onsuccess = function(){ resolve(); };
       req.onerror = function(){ reject(req.error); };
     } catch(e){ reject(e); }
@@ -764,8 +775,8 @@ function dbClear(store){
   return new Promise(function(resolve, reject){
     if(!db){ reject(new Error('DB non prête')); return; }
     try {
-      var tx = db.transaction(store, 'readwrite');
-      var req = tx.objectStore(store).clear();
+      let tx = db.transaction(store, 'readwrite');
+      let req = tx.objectStore(store).clear();
       req.onsuccess = function(){ resolve(); };
       req.onerror = function(){ reject(req.error); };
     } catch(e){ reject(e); }
@@ -779,7 +790,7 @@ function fetchMeteo(force){
   if(!force && meteoCache && (Date.now() - meteoCacheTs) < 600000){
     return Promise.resolve(meteoCache);
   }
-  var url = 'https://api.open-meteo.com/v1/forecast'
+  let url = 'https://api.open-meteo.com/v1/forecast'
     + '?latitude=' + GARDEN.lat + '&longitude=' + GARDEN.lon
     + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m,wind_direction_10m,weather_code'
     + '&hourly=temperature_2m,precipitation_probability,precipitation,weather_code'
@@ -794,7 +805,7 @@ function fetchMeteo(force){
 
 function fetchAirQuality(){
   if(airCache && (Date.now() - airCache.ts) < 1800000) return Promise.resolve(airCache.data);
-  var url = 'https://air-quality-api.open-meteo.com/v1/air-quality'
+  let url = 'https://air-quality-api.open-meteo.com/v1/air-quality'
     + '?latitude=' + GARDEN.lat + '&longitude=' + GARDEN.lon
     + '&current=pm2_5,pm10,european_aqi&timezone=Europe%2FParis';
   return xhrGet(url).then(function(d){
@@ -809,13 +820,13 @@ function fetchAirQuality(){
 function computeMoon(date){
   date = date || new Date();
   // Known new moon reference: 2000-01-06 18:14 UTC
-  var ref = Date.UTC(2000, 0, 6, 18, 14);
-  var synodic = 29.53058867;
-  var days = (date.getTime() - ref) / 86400000;
-  var phase = ((days % synodic) + synodic) % synodic;
-  var pct = phase / synodic; // 0..1
+  let ref = Date.UTC(2000, 0, 6, 18, 14);
+  let synodic = 29.53058867;
+  let days = (date.getTime() - ref) / 86400000;
+  let phase = ((days % synodic) + synodic) % synodic;
+  let pct = phase / synodic; // 0..1
 
-  var label, emoji, waxing;
+  let label, emoji, waxing;
   if(pct < 0.03 || pct > 0.97){ label='Nouvelle lune'; emoji='🌑'; waxing=true; }
   else if(pct < 0.22){ label='Premier croissant'; emoji='🌒'; waxing=true; }
   else if(pct < 0.28){ label='Premier quartier'; emoji='🌓'; waxing=true; }
@@ -826,10 +837,10 @@ function computeMoon(date){
   else { label='Dernier croissant'; emoji='🌘'; waxing=false; }
 
   // Biodynamic day type (simplified 4-day cycle)
-  var types = ['Jour Feuille','Jour Fruit','Jour Racine','Jour Fleur'];
-  var typeIdx = Math.floor(pct * 12) % 4;
-  var type = types[typeIdx];
-  var typeAction = {
+  let types = ['Jour Feuille','Jour Fruit','Jour Racine','Jour Fleur'];
+  let typeIdx = Math.floor(pct * 12) % 4;
+  let type = types[typeIdx];
+  let typeAction = {
     'Jour Feuille':'salades, choux, épinards — arrosage, taille des feuillages',
     'Jour Fruit':'tomates, courges, haricots — semis et récolte de fruits',
     'Jour Racine':'carottes, pommes de terre, radis — travaux au sol',
@@ -843,17 +854,17 @@ function computeMoon(date){
 // §7 · RENDER · TELEMETRY + MOON
 // ═══════════════════════════════════════════════════════════
 function renderTelemetry(data){
-  var g = $('teleGrid');
+  let g = $('teleGrid');
   if(!g || !data || !data.current){ return; }
-  var c = data.current;
-  var rainNext24 = 0;
+  let c = data.current;
+  let rainNext24 = 0;
   if(data.hourly && data.hourly.precipitation){
-    for(var i=0;i<Math.min(24,data.hourly.precipitation.length);i++){
+    for(let i=0;i<Math.min(24,data.hourly.precipitation.length);i++){
       rainNext24 += data.hourly.precipitation[i] || 0;
     }
   }
-  var tempWarn = c.temperature_2m < 2 || c.temperature_2m > 32;
-  var windWarn = c.wind_speed_10m > 40;
+  let tempWarn = c.temperature_2m < 2 || c.temperature_2m > 32;
+  let windWarn = c.wind_speed_10m > 40;
 
   g.innerHTML =
     '<div class="tele-cell' + (tempWarn?' warn':'') + '"><div class="lb">Température</div>'
@@ -872,29 +883,29 @@ function renderTelemetry(data){
     + '<div class="vl">' + rainNext24.toFixed(1) + '<span class="un">mm</span></div>'
     + '<div class="sub">' + (rainNext24>10?'forte':rainNext24>2?'modérée':rainNext24>0.1?'légère':'sec') + '</div></div>';
 
-  var st = $('wxStatus');
+  let st = $('wxStatus');
   if(st) st.innerHTML = '<span class="hd-dot"></span> live';
 }
 
 function windDir(deg){
   if(deg == null) return '—';
-  var dirs = ['N','NE','E','SE','S','SO','O','NO'];
+  let dirs = ['N','NE','E','SE','S','SO','O','NO'];
   return dirs[Math.round(((deg % 360) / 45)) % 8];
 }
 
 function renderMoon(){
-  var m = computeMoon();
-  var lbl = $('moonLabel');
-  var typ = $('moonType');
+  let m = computeMoon();
+  let lbl = $('moonLabel');
+  let typ = $('moonType');
   if(lbl) lbl.textContent = m.emoji + ' ' + m.label;
   if(typ) typ.textContent = m.type + ' · ' + m.typeAction;
 
   // Visual shadow positioning
-  var shadow = $('moonShadow');
+  let shadow = $('moonShadow');
   if(shadow){
-    var pct = m.pct;
+    let pct = m.pct;
     // translateX from -56 (new) through 0 (full) back to -56
-    var tx;
+    let tx;
     if(pct < 0.5){
       // waxing: shadow moves from covering right to fully gone
       tx = 56 * (1 - pct * 2);
@@ -911,16 +922,16 @@ function renderMoon(){
 // §8 · ORACLE · PROMPT + API
 // ═══════════════════════════════════════════════════════════
 function buildPromptCompact(context){
-  var date = fmtFullDate(new Date());
-  var w = context.weather.current;
-  var rain = context.rain24 || 0;
-  var m = context.moon;
-  var season = getSeason();
-  var airStr = context.air && context.air.current ? ('PM2.5 ' + context.air.current.pm2_5.toFixed(1) + 'µg/m³, IQA ' + context.air.current.european_aqi) : 'N/A';
-  var seedsActive = context.seeds.filter(function(s){
+  let date = fmtFullDate(new Date());
+  let w = context.weather.current;
+  let rain = context.rain24 || 0;
+  let m = context.moon;
+  let season = getSeason();
+  let airStr = context.air && context.air.current ? ('PM2.5 ' + context.air.current.pm2_5.toFixed(1) + 'µg/m³, IQA ' + context.air.current.european_aqi) : 'N/A';
+  let seedsActive = context.seeds.filter(function(s){
     return s.status === 'pousse' || s.status === 'germé' || s.status === 'semé';
   }).slice(0, 12);
-  var seedsStr = seedsActive.length
+  let seedsStr = seedsActive.length
     ? seedsActive.map(function(s){ return s.name + '(' + s.status + ')'; }).join(', ')
     : 'aucune';
 
@@ -944,20 +955,20 @@ function buildPromptCompact(context){
 }
 
 function pickActiveProvider(){
-  for(var i=0;i<PROV_ORDER.length;i++){
-    var pid = PROV_ORDER[i];
+  for(let i=0;i<PROV_ORDER.length;i++){
+    let pid = PROV_ORDER[i];
     if(getKey(pid)) return pid;
   }
   return null;
 }
 
 function callProvider(providerId, prompt){
-  var p = PROVIDERS[providerId];
-  var key = getKey(providerId);
+  let p = PROVIDERS[providerId];
+  let key = getKey(providerId);
   if(!p) return Promise.reject(new Error('Provider inconnu'));
   if(!key) return Promise.reject(new Error('Clé ' + p.name + ' manquante'));
 
-  var body = {
+  let body = {
     model: p.model,
     messages: [{ role:'user', content: prompt }],
     temperature: 0.6,
@@ -965,25 +976,25 @@ function callProvider(providerId, prompt){
   };
   return xhrPost(p.endpoint, body, { 'Authorization': 'Bearer ' + key }, 60000)
     .then(function(res){
-      var txt = res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content;
+      let txt = res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content;
       if(!txt) throw new Error('Réponse vide');
       return { text: txt, provider: p.name };
     });
 }
 
 function callWithFallback(prompt){
-  var tried = [];
-  var active = pickActiveProvider();
+  let tried = [];
+  let active = pickActiveProvider();
   if(!active) return Promise.reject(new Error('Aucune clé configurée — onglet Config'));
 
   // Reorder starting from active provider, keeping all configured ones
-  var order = [active].concat(PROV_ORDER.filter(function(p){ return p !== active && getKey(p); }));
+  let order = [active].concat(PROV_ORDER.filter(function(p){ return p !== active && getKey(p); }));
 
   function tryNext(i){
     if(i >= order.length){
       return Promise.reject(new Error('Tous les providers ont échoué: ' + tried.join(' / ')));
     }
-    var pid = order[i];
+    let pid = order[i];
     return callProvider(pid, prompt).catch(function(e){
       tried.push(PROVIDERS[pid].name + ':' + (e.message || 'err').slice(0,30));
       if(i < order.length - 1){
@@ -998,17 +1009,17 @@ function callWithFallback(prompt){
 function parseOracleJSON(raw){
   if(!raw) throw new Error('Réponse vide');
   // Clean markdown fences
-  var clean = String(raw).trim()
+  let clean = String(raw).trim()
     .replace(/^```json\s*/i, '')
     .replace(/^```\s*/, '')
     .replace(/\s*```\s*$/, '')
     .trim();
   // Extract first {...} block
-  var start = clean.indexOf('{');
-  var end = clean.lastIndexOf('}');
+  let start = clean.indexOf('{');
+  let end = clean.lastIndexOf('}');
   if(start < 0 || end < 0) throw new Error('JSON introuvable dans la réponse');
   clean = clean.slice(start, end + 1);
-  var parsed = JSON.parse(clean);
+  let parsed = JSON.parse(clean);
   if(!Array.isArray(parsed.do)) parsed.do = [];
   if(!Array.isArray(parsed.dont)) parsed.dont = [];
   if(!Array.isArray(parsed.forecast)) parsed.forecast = [];
@@ -1017,12 +1028,12 @@ function parseOracleJSON(raw){
 }
 
 function launchOracle(){
-  var btn = $('btnOracle');
-  var lbl = $('btnOracleLbl');
-  var out = $('oracleOutput');
+  let btn = $('btnOracle');
+  let lbl = $('btnOracleLbl');
+  let out = $('oracleOutput');
   if(!btn || !out) return;
 
-  var active = pickActiveProvider();
+  let active = pickActiveProvider();
   if(!active){
     showToast('Configure une clé IA (onglet Config)', 'err');
     goTab('config');
@@ -1034,17 +1045,17 @@ function launchOracle(){
   out.innerHTML = '<div class="card"><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div></div>';
 
   // Gather context
-  var ctxPromise = Promise.all([
+  let ctxPromise = Promise.all([
     fetchMeteo(),
     fetchAirQuality(),
     dbGetAll('seeds')
   ]).then(function(results){
-    var meteo = results[0];
-    var air = results[1];
-    var seeds = results[2];
-    var rain24 = 0;
+    let meteo = results[0];
+    let air = results[1];
+    let seeds = results[2];
+    let rain24 = 0;
     if(meteo.hourly && meteo.hourly.precipitation){
-      for(var i=0;i<Math.min(24,meteo.hourly.precipitation.length);i++){
+      for(let i=0;i<Math.min(24,meteo.hourly.precipitation.length);i++){
         rain24 += meteo.hourly.precipitation[i] || 0;
       }
     }
@@ -1058,9 +1069,9 @@ function launchOracle(){
   });
 
   ctxPromise.then(function(ctx){
-    var prompt = buildPromptCompact(ctx);
+    let prompt = buildPromptCompact(ctx);
     return callWithFallback(prompt).then(function(res){
-      var parsed = parseOracleJSON(res.text);
+      let parsed = parseOracleJSON(res.text);
       lastOracleResult = { ...parsed, provider: res.provider, ts: Date.now() };
       // Save to IDB
       dbAdd('oracle', {
@@ -1084,10 +1095,10 @@ function launchOracle(){
 }
 
 function renderOracleResult(r, providerName){
-  var out = $('oracleOutput');
+  let out = $('oracleOutput');
   if(!out) return;
 
-  var html = '';
+  let html = '';
 
   // DO list
   if(r.do.length){
@@ -1135,17 +1146,17 @@ function renderOracleResult(r, providerName){
 // §9 · METEO TAB RENDERING
 // ═══════════════════════════════════════════════════════════
 function renderMeteoTab(){
-  var container = $('meteoContent');
+  let container = $('meteoContent');
   if(!container) return;
   container.innerHTML = '<div class="card"><div class="skel"></div><div class="skel" style="width:70%"></div></div>';
 
   fetchMeteo(true).then(function(data){
-    var html = '';
+    let html = '';
 
     // Current card
-    var c = data.current;
-    var code = c.weather_code;
-    var wmo = WMO[code] || ['❓','Inconnu'];
+    let c = data.current;
+    let code = c.weather_code;
+    let wmo = WMO[code] || ['❓','Inconnu'];
     html += '<div class="hero" style="margin-bottom:16px">'
       + '<div class="hero-eyebrow">' + fmtFullDate(new Date()) + ' · maintenant</div>'
       + '<h2 style="display:flex;align-items:center;gap:14px">'
@@ -1158,15 +1169,15 @@ function renderMeteoTab(){
     // 7-day forecast
     if(data.daily){
       html += '<div class="card"><div class="card-hd"><span class="ic">📅</span><h3>Prévisions 7 jours</h3></div>';
-      var n = data.daily.time.length;
-      for(var i=0;i<n;i++){
-        var d = new Date(data.daily.time[i]);
-        var dyLabel = i === 0 ? 'Aujourd\'hui' : DAYS_SHORT[d.getDay()] + ' ' + d.getDate();
-        var wc = data.daily.weather_code[i];
-        var w = WMO[wc] || ['❓','?'];
-        var tmax = Math.round(data.daily.temperature_2m_max[i]);
-        var tmin = Math.round(data.daily.temperature_2m_min[i]);
-        var pp = data.daily.precipitation_sum[i] || 0;
+      let n = data.daily.time.length;
+      for(let i=0;i<n;i++){
+        let d = new Date(data.daily.time[i]);
+        let dyLabel = i === 0 ? 'Aujourd\'hui' : DAYS_SHORT[d.getDay()] + ' ' + d.getDate();
+        let wc = data.daily.weather_code[i];
+        let w = WMO[wc] || ['❓','?'];
+        let tmax = Math.round(data.daily.temperature_2m_max[i]);
+        let tmin = Math.round(data.daily.temperature_2m_min[i]);
+        let pp = data.daily.precipitation_sum[i] || 0;
         html += '<div class="day-row">'
           + '<div class="dy">' + dyLabel + '</div>'
           + '<div class="ic" title="' + esc(w[1]) + '">' + w[0] + '</div>'
@@ -1180,9 +1191,9 @@ function renderMeteoTab(){
 
     // Sunrise/Sunset
     if(data.daily && data.daily.sunrise){
-      var sr = new Date(data.daily.sunrise[0]);
-      var ss = new Date(data.daily.sunset[0]);
-      var uv = data.daily.uv_index_max[0];
+      let sr = new Date(data.daily.sunrise[0]);
+      let ss = new Date(data.daily.sunset[0]);
+      let uv = data.daily.uv_index_max[0];
       html += '<div class="card"><div class="card-hd"><span class="ic">☀</span><h3>Soleil aujourd\'hui</h3></div>'
         + '<div class="tele">'
         + '<div class="tele-cell"><div class="lb">Lever</div><div class="vl">' + pad2(sr.getHours()) + ':' + pad2(sr.getMinutes()) + '</div></div>'
@@ -1203,9 +1214,9 @@ function renderMeteoTab(){
 function pad2(n){ return (n < 10 ? '0' : '') + n; }
 
 function fmtDuration(ms){
-  var totalMin = Math.floor(ms / 60000);
-  var h = Math.floor(totalMin / 60);
-  var m = totalMin % 60;
+  let totalMin = Math.floor(ms / 60000);
+  let h = Math.floor(totalMin / 60);
+  let m = totalMin % 60;
   return h + 'h' + pad2(m);
 }
 
@@ -1213,8 +1224,8 @@ function fmtDuration(ms){
 // §10 · SEEDS
 // ═══════════════════════════════════════════════════════════
 function addSeed(){
-  var name = ($('newSeedName').value || '').trim();
-  var status = $('newSeedStatus').value || 'semé';
+  let name = ($('newSeedName').value || '').trim();
+  let status = $('newSeedStatus').value || 'semé';
   if(!name){
     showToast('Nom requis', 'err');
     return;
@@ -1237,18 +1248,18 @@ function deleteSeed(id){
 }
 
 function cycleSeedStatus(id){
-  var order = ['semé','germé','pousse','récolté'];
+  let order = ['semé','germé','pousse','récolté'];
   dbGetAll('seeds').then(function(list){
-    var s = list.find(function(x){ return x.id === id; });
+    let s = list.find(function(x){ return x.id === id; });
     if(!s) return;
-    var idx = order.indexOf(s.status);
+    let idx = order.indexOf(s.status);
     s.status = order[(idx + 1) % order.length];
     dbPut('seeds', s).then(renderSeeds);
   });
 }
 
 function renderSeeds(){
-  var el = $('seedsList');
+  let el = $('seedsList');
   if(!el) return;
   dbGetAll('seeds').then(function(list){
     if(!list.length){
@@ -1256,9 +1267,9 @@ function renderSeeds(){
       return;
     }
     list.sort(function(a,b){ return (b.ts || 0) - (a.ts || 0); });
-    var emojis = { 'semé':'🌰','germé':'🌱','pousse':'🌿','récolté':'🌾' };
+    let emojis = { 'semé':'🌰','germé':'🌱','pousse':'🌿','récolté':'🌾' };
     el.innerHTML = '<div class="stagger">' + list.map(function(s){
-      var emoji = emojis[s.status] || '🌱';
+      let emoji = emojis[s.status] || '🌱';
       return '<div class="list-item" onclick="cycleSeedStatus(' + s.id + ')" style="cursor:pointer">'
         + '<div class="pic">' + emoji + '</div>'
         + '<div class="body">'
@@ -1275,8 +1286,8 @@ function renderSeeds(){
 // §11 · TASKS
 // ═══════════════════════════════════════════════════════════
 function addTask(){
-  var txt = ($('newTaskTxt').value || '').trim();
-  var date = $('newTaskDate').value || '';
+  let txt = ($('newTaskTxt').value || '').trim();
+  let date = $('newTaskDate').value || '';
   if(!txt){ showToast('Texte requis', 'err'); return; }
   dbAdd('tasks', { txt: txt, due: date, done: false, ts: Date.now() })
     .then(function(){
@@ -1290,7 +1301,7 @@ function addTask(){
 
 function toggleTask(id){
   dbGetAll('tasks').then(function(list){
-    var t = list.find(function(x){ return x.id === id; });
+    let t = list.find(function(x){ return x.id === id; });
     if(!t) return;
     t.done = !t.done;
     dbPut('tasks', t).then(renderTasks);
@@ -1305,7 +1316,7 @@ function deleteTask(id){
 }
 
 function renderTasks(){
-  var el = $('tasksList');
+  let el = $('tasksList');
   if(!el) return;
   dbGetAll('tasks').then(function(list){
     if(!list.length){
@@ -1316,19 +1327,19 @@ function renderTasks(){
     list.sort(function(a,b){
       if(a.done !== b.done) return a.done ? 1 : -1;
       if(!a.done){
-        var ad = a.due || '9999';
-        var bd = b.due || '9999';
+        let ad = a.due || '9999';
+        let bd = b.due || '9999';
         return ad.localeCompare(bd);
       }
       return (b.ts || 0) - (a.ts || 0);
     });
 
     el.innerHTML = '<div class="stagger">' + list.map(function(t){
-      var dueStr = '';
+      let dueStr = '';
       if(t.due){
-        var dueDate = new Date(t.due);
-        var today = new Date(); today.setHours(0,0,0,0);
-        var diffDays = Math.round((dueDate - today) / 86400000);
+        let dueDate = new Date(t.due);
+        let today = new Date(); today.setHours(0,0,0,0);
+        let diffDays = Math.round((dueDate - today) / 86400000);
         if(diffDays < 0) dueStr = '⚠ en retard de ' + Math.abs(diffDays) + 'j';
         else if(diffDays === 0) dueStr = '📍 aujourd\'hui';
         else if(diffDays === 1) dueStr = '↗ demain';
@@ -1352,7 +1363,7 @@ function renderTasks(){
 // §12 · NOTES
 // ═══════════════════════════════════════════════════════════
 function addNote(){
-  var txt = ($('newNoteTxt').value || '').trim();
+  let txt = ($('newNoteTxt').value || '').trim();
   if(!txt){ showToast('Entrée vide', 'err'); return; }
   dbAdd('notes', { txt: txt, ts: Date.now() })
     .then(function(){
@@ -1372,7 +1383,7 @@ function deleteNote(id){
 }
 
 function renderNotes(){
-  var el = $('notesList');
+  let el = $('notesList');
   if(!el) return;
   dbGetAll('notes').then(function(list){
     if(!list.length){
@@ -1381,8 +1392,8 @@ function renderNotes(){
     }
     list.sort(function(a,b){ return (b.ts || 0) - (a.ts || 0); });
     el.innerHTML = '<div class="stagger">' + list.map(function(n){
-      var d = new Date(n.ts);
-      var dateStr = fmtFullDate(d) + ' · ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+      let d = new Date(n.ts);
+      let dateStr = fmtFullDate(d) + ' · ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
       return '<div class="card" style="position:relative">'
         + '<button class="del" onclick="deleteNote(' + n.id + ')" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--ink-40);cursor:pointer;font-size:1.1em">✕</button>'
         + '<div class="mono" style="font-size:.7em;color:var(--ink-60);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">' + dateStr + '</div>'
@@ -1397,7 +1408,7 @@ function renderNotes(){
 // ═══════════════════════════════════════════════════════════
 function loadKeysIntoForm(){
   ['groq','cerebras','mistral'].forEach(function(pid){
-    var input = $('key' + pid.charAt(0).toUpperCase() + pid.slice(1));
+    let input = $('key' + pid.charAt(0).toUpperCase() + pid.slice(1));
     if(input) input.value = getKey(pid);
   });
 }
@@ -1412,24 +1423,24 @@ function saveKeys(){
 }
 
 function renderProviders(){
-  var row = $('provRow');
+  let row = $('provRow');
   if(!row) return;
-  var active = pickActiveProvider();
+  let active = pickActiveProvider();
   row.innerHTML = PROV_ORDER.map(function(pid){
-    var p = PROVIDERS[pid];
-    var hasKey = !!getKey(pid);
-    var isActive = pid === active;
-    var cls = 'prov-chip' + (isActive ? ' on' : '') + (hasKey ? ' ok' : '');
+    let p = PROVIDERS[pid];
+    let hasKey = !!getKey(pid);
+    let isActive = pid === active;
+    let cls = 'prov-chip' + (isActive ? ' on' : '') + (hasKey ? ' ok' : '');
     return '<span class="' + cls + '"><span class="led"></span>' + p.emoji + ' ' + p.name + ' <span class="mono dim" style="font-size:.9em">' + p.limit + '</span></span>';
   }).join('');
 }
 
 function updateHeaderProvider(){
-  var chip = $('provChipHd');
+  let chip = $('provChipHd');
   if(!chip) return;
-  var active = pickActiveProvider();
+  let active = pickActiveProvider();
   if(active){
-    var p = PROVIDERS[active];
+    let p = PROVIDERS[active];
     chip.textContent = p.emoji + ' ' + p.name;
     chip.className = 'pill live';
   } else {
@@ -1439,13 +1450,13 @@ function updateHeaderProvider(){
 }
 
 function testProviders(){
-  var active = pickActiveProvider();
+  let active = pickActiveProvider();
   if(!active){
     showToast('Aucune clé configurée', 'err');
     return;
   }
   showToast('Test ' + PROVIDERS[active].name + '…', 'ok');
-  var prompt = 'Réponds uniquement par le chiffre 42 en un mot.';
+  let prompt = 'Réponds uniquement par le chiffre 42 en un mot.';
   callProvider(active, prompt).then(function(res){
     showToast('✓ ' + res.provider + ' OK', 'ok');
   }).catch(function(err){
@@ -1463,7 +1474,7 @@ function exportData(){
     dbGetAll('notes'),
     dbGetAll('oracle')
   ]).then(function(r){
-    var payload = {
+    let payload = {
       version: 'OracleV24',
       exported_at: new Date().toISOString(),
       garden: GARDEN,
@@ -1472,9 +1483,9 @@ function exportData(){
       notes: r[2],
       oracle_history: r[3]
     };
-    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
+    let blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
     a.href = url;
     a.download = 'oracle-jardinier-' + new Date().toISOString().slice(0,10) + '.json';
     document.body.appendChild(a);
@@ -1488,19 +1499,19 @@ function exportData(){
 }
 
 function importData(ev){
-  var file = ev.target.files && ev.target.files[0];
+  let file = ev.target.files && ev.target.files[0];
   if(!file) return;
-  var reader = new FileReader();
+  let reader = new FileReader();
   reader.onload = function(e){
     try {
-      var data = JSON.parse(e.target.result);
+      let data = JSON.parse(e.target.result);
       if(!data.version){ throw new Error('Fichier non reconnu'); }
       if(!confirm('Importer ces données ? Les données actuelles seront conservées.')) return;
-      var tasks = [];
+      let tasks = [];
       ['seeds','tasks','notes'].forEach(function(store){
         if(Array.isArray(data[store])){
           data[store].forEach(function(obj){
-            var clone = Object.assign({}, obj);
+            let clone = Object.assign({}, obj);
             delete clone.id;
             tasks.push(dbAdd(store, clone));
           });
@@ -1541,13 +1552,13 @@ function resetData(){
 // §15 · NAVIGATION
 // ═══════════════════════════════════════════════════════════
 function goTab(name){
-  var tabs = document.querySelectorAll('.tp');
-  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
-  var target = $('tab-' + name);
+  let tabs = document.querySelectorAll('.tp');
+  for(let i=0;i<tabs.length;i++) tabs[i].classList.remove('on');
+  let target = $('tab-' + name);
   if(target) target.classList.add('on');
 
-  var btns = document.querySelectorAll('.nb');
-  for(var j=0;j<btns.length;j++){
+  let btns = document.querySelectorAll('.nb');
+  for(let j=0;j<btns.length;j++){
     if(btns[j].getAttribute('data-tab') === name) btns[j].classList.add('on');
     else btns[j].classList.remove('on');
   }
@@ -1567,8 +1578,8 @@ function goTab(name){
 // §16 · ONLINE/OFFLINE
 // ═══════════════════════════════════════════════════════════
 function updateOnlineStatus(){
-  var off = $('offBadge');
-  var dot = $('liveDot');
+  let off = $('offBadge');
+  let dot = $('liveDot');
   if(!off || !dot) return;
   if(navigator.onLine){
     off.classList.add('hidden');
@@ -1583,9 +1594,9 @@ function updateOnlineStatus(){
 // §17 · INIT
 // ═══════════════════════════════════════════════════════════
 function setGreeting(){
-  var el = $('heroGreeting');
+  let el = $('heroGreeting');
   if(el) el.innerHTML = greetingByHour() + ', <em>jardinier</em>';
-  var d = $('hdDate');
+  let d = $('hdDate');
   if(d) d.textContent = fmtFullDate(new Date());
 }
 
@@ -1605,7 +1616,7 @@ async function init(){
 
   // Live meteo on oracle tab
   fetchMeteo().then(renderTelemetry).catch(function(err){
-    var st = $('wxStatus');
+    let st = $('wxStatus');
     if(st) st.innerHTML = '<span class="hd-dot off"></span> offline';
     console.warn('Meteo err', err);
   });
