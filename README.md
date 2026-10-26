@@ -1,5 +1,8 @@
 # 🌿 L'Oracle du Jardinier
 
+> **Statut portfolio (octobre 2026) — variante conservée, non sélectionnée dans la vitrine.** Cette variante Terroir Synthétique est conservée pour ses modules de jardin, météo et semences. Le projet oracle-du-jardinier est retenu dans la vitrine principale ; il ne s'agit pas d'une fusion de code. Voir [la politique de sélection](https://github.com/Nikoju1977/Nikoju1977/blob/main/CURATION.md) et [le projet de référence](https://github.com/Nikoju1977/oracle-du-jardinier).
+
+
 > **Terroir Synthétique** — Assistant agronomique IA pour jardin permacole, Loire-Atlantique (44)
 
 Single-file HTML · zero build · progressive enhancement · PWA-ready
@@ -58,13 +61,13 @@ L'Oracle du Jardinier fusionne **météo temps réel**, **phase lunaire biodynam
 
 ## 🚀 Déploiement
 
-### GitHub Pages (auto)
-Push sur `main` → Pages sert automatiquement `index.html`.
+### GitHub Pages (si activé)
+Configurer la publication depuis les réglages du dépôt ; un simple push sur `main` ne garantit pas qu'un site soit publié.
 
 ### Local
 ```bash
-git clone https://github.com/nikolas1977/oracle-du-jardinier.git
-cd oracle-du-jardinier
+git clone https://github.com/Nikoju1977/le-jardin-de-niko.git
+cd le-jardin-de-niko
 python3 -m http.server 8000
 # → http://localhost:8000
 ```
