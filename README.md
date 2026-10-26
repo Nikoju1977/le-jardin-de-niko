@@ -4,7 +4,7 @@
 
 Single-file HTML · zero build · progressive enhancement · PWA-ready
 
-**🔗 Démo live** : [nikolas1977.github.io/oracle-du-jardinier](https://nikolas1977.github.io/oracle-du-jardinier/)
+**🔗 Démo live** : [dépôt du projet (déploiement à confirmer)](https://github.com/Nikoju1977/le-jardin-de-niko)
 
 ---
 
@@ -123,3 +123,14 @@ MIT © 2026 Nicolas Julienne · [Studio Niko Design](https://github.com/nikolas1
 Construit à [La Meilleraye-de-Bretagne](https://fr.wikipedia.org/wiki/La_Meilleraye-de-Bretagne), Loire-Atlantique, avec passion pour la permaculture et le code.
 
 **Niko Julienne Labs** · v24 · 2026
+
+
+## Positionnement du projet
+
+**Thème : nature · jardinage · agriculture numérique.** Les données météo, d'air et les suggestions générées par des agents numériques servent d'aide à l'observation ; elles ne garantissent pas une prévision localement exacte. Les approches biodynamiques et lunaires sont proposées comme contenus culturels / expérimentaux, sans preuve générale de bénéfice agronomique des calendriers lunaires.
+
+Les ressources externes peuvent être indisponibles ou soumises à des limites d'utilisation. Avant d'appliquer une recommandation de traitement sur des végétaux, respecter les règles applicables et consulter des sources agronomiques indépendantes.
+
+**Vérification :** la disponibilité de la démo, les connexions API et les résultats des agents ne sont pas validés par la présente mise à jour documentaire.
+
+[Catalogue des projets Studio Niko Design](https://github.com/Nikoju1977).
